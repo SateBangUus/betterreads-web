@@ -38,3 +38,6 @@ python manage.py runserver
 - User
 - Curator
 - Admin
+
+## Story and Benefits
+In the late 2023, a passionate reader and tech enthusiast named Dika found himself exploring the bookshelf of a dear friend. This seemingly ordinary moment would give rise to an idea that would lead to the creation of BetterReads, a groundbreaking platform for book lovers and bibliophiles worldwide.
