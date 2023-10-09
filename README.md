@@ -25,3 +25,16 @@ python manage.py runserver
 2. Ferdinand Raja Kenedy
 3. Andika Pramudya Wardana
 4. Rafif Firmansyah Aulia
+
+## Features
+
+- Library
+- Book Review
+- Book Recommendation by Curators
+- User Top 5 Books
+
+## User Roles
+
+- User
+- Curator
+- Admin
