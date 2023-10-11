@@ -28,14 +28,14 @@ python manage.py runserver
 
 ## Features
 
-- Library
-User can find books from the dataset. User can also filter books based on genre to make it easier to find
-- Book Review
-User can leave a review and give a rating about a book that user have read. User can also like and dislike a review that was written by another user.
-- Book Recommendation by Curators
-Curators can give a recommendation about recommended book to user.
-- User Top 5 Books
-User can create their own top 5 books list that they have read.
+- Library</br>
+    User can find books from the dataset. User can also filter books based on genre to make it easier to find
+- Book Review</br>
+    User can leave a review and give a rating about a book that user have read. User can also like and dislike a review that was written by another user.
+- Book Recommendation by Curators</br>
+    Curators can give a recommendation about recommended book to user.
+- User Top 5 Books</br>
+    User can create their own top 5 books list that they have read.
 
 ## User Roles
 
