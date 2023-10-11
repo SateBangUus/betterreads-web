@@ -46,10 +46,20 @@ python manage.py tailwind build && gunicorn betterreads-web.wsgi
 
 ## User Roles
 
-- User
+- User:
+    - Find their desired books from the dataset
+    - Use Filter to help them minimize the scope of books they searched
+    - Review and rate the user's read books
+    - Like & Dislike other user's review
+    - List and published their top choice books
 - Curator
+    - Different Section and module from "User"
+    - Curator reviews will be pushed to the top of the review's list
+    - Curator will get a verified badge
 - Admin
-
+    - Get full control and view of the web activity
+    - Get access to banned unusual and inappropriate user's activity
+    - Maintain the accessibility of each features in the website
 ## Story and Benefits
 In the late 2023, a passionate reader and tech enthusiast named Dika found himself exploring the bookshelf of a dear friend. This seemingly ordinary moment would give rise to an idea that would lead to the creation of BetterReads, a groundbreaking platform for book lovers and bibliophiles worldwide. 
 
