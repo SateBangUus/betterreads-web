@@ -36,11 +36,11 @@ python manage.py tailwind build && gunicorn betterreads-web.wsgi
 ## Features
 
 - Library</br>
-    User can find books from the dataset. User can also filter books based on genre to make it easier to find
+    User can find books from the dataset. User can also filter books to make it easier to find
 - Book Review</br>
     User can leave a review and give a rating about a book that user have read. User can also like and dislike a review that was written by another user.
 - Book Recommendation by Curators</br>
-    Curators can give a recommendation about recommended book to user.
+    Curator reviews will be published on the main page. And will be on a different section from the user reviews on the book page.
 - User Top 5 Books</br>
     User can create their own top 5 books list that they have read.
 
@@ -56,4 +56,4 @@ In the late 2023, a passionate reader and tech enthusiast named Dika found himse
 One of the key benefits of BetterReads is its integrated book review feature, allowing users to discover and contribute insightful reviews, making it easier for readers to find their next captivating read and fostering a vibrant community of literary enthusiasts.
 
 ## Source of Book Catalog Dataset
-[Google API](https://developers.google.com/books/)
+[Google Books API](https://developers.google.com/books/)
