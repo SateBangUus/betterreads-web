@@ -19,6 +19,13 @@ python manage.py tailwind start
 # Terminal #2
 python manage.py runserver
 ```
+## Build
+
+```bash
+source env/bin/activate
+python manage.py tailwind build && gunicorn betterreads-web.wsgi
+```
+
 
 ## Members
 1. Muhammad Oka
