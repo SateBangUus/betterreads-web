@@ -1,6 +1,9 @@
 from django.shortcuts import render
+from django.http import HttpResponseRedirect
 
 # Create your views here.
 
 def show_main(request):
-    return render(request, 'main.html')
+    if request.user.is_authenticated:
+        return render(request, 'main.html')
+    return HttpResponseRedirect('/auth/login/')
