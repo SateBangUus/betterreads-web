@@ -16,8 +16,3 @@ def decrementBook(request, id):
     data.amount -=1
     data.save()
     return HttpResponseRedirect(reverse('main:show_main'))
-def buy_book(request, id):
-    data = Item.objects.get(id =id)
-    books = data.amount
-    context = {'books': books}
-    return render(request, "buy_product.html", context)
