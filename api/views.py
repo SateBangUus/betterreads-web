@@ -6,8 +6,8 @@ GOOGLE_BOOKS_API_URL = "https://www.googleapis.com/books/v1/"
 GOOGLE_BOOKS_API_KEY = "AIzaSyAs_56YG32-6Q9dQwiqa24fk64pm1CyeQ8"
 
 # Create your views here.
-def get_book(request):
-    id = request.GET.get('id')
+def get_book(request, id=0):
+    id = request.GET.get('id') or id
     res = requests.get(f"{GOOGLE_BOOKS_API_URL}volumes/{id}?key={GOOGLE_BOOKS_API_KEY}")
     return JsonResponse(res.json())
 
