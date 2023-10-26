@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from user.models import Curator
 
 # Create your views here.
 def login_user(request):
@@ -34,7 +35,8 @@ def register_user(request):
         form = UserCreationForm(request.POST)
 
         if form.is_valid():
-            form.save()
+            user = form.save()
+            Curator.objects.create(user=user)
             messages.success(request, 'Account created successfully')
             return HttpResponseRedirect('/')
     context = {'form': form}
