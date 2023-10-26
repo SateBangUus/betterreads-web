@@ -1,33 +1,47 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="flex flex-col w-screen h-screen">
-    <nav class="bg-neutral-600 p-8 rounded-b-xl flex justify-between">
+<div class="flex flex-col">
+    <nav class=" bg-neutral-600 px-8 py-6 rounded-b-xl grid grid-cols-3 justify-between items-center">
         <a href="/" class="text-4xl font-black text-[#236bf1]">Better<span class="text-[#ec2f3f]">Reads</span></a>
-        <input class="bg-neutral-500 rounded-xl"></input>
-        <div class="flex justify-center items-center">
-            <p class="text-3xl font-bold">Hello, {{ user.username }}!</p>
+        <input class="bg-neutral-500 rounded-xl">
+        <div class="flex flex-col justify-center items-end">
+            <p class="text-2xl font-bold">Hello, <a href="/user/profile/">{{ user.username }}</a>!</p>
+            <a href="/auth/logout/">Logout</a>
         </div>
     </nav>
-    <div class="grid grid-cols-2 justify-center items-center p-16 w-full h-full">
-        <h1 class="text-6xl font-bold text-right p-16">Register</h1>
-        <div class="w-1/2">
-            <form method="POST" class="flex flex-col gap-4">
-                {% csrf_token %}
-                <div class="flex flex-col gap-2">
-                    <label for="username" class="text-2xl font-bold">Username</label>
-                    <input type="text" name="username" id="username" class="block w-full p-2 rounded-lg bg-neutral-700 text-white" />
+    <div class="flex flex-col gap-16 p-16 w-full h-full">
+        <h1 class="text-5xl font-bold">User Profile</h1>
+
+        <div class="flex justify-center items-center gap-8">
+            <img src="https://isaca-gwdc.org/wp-content/uploads/2016/12/male-profile-image-placeholder.png" class="rounded-full w-36 h-36">
+            <div class="flex flex-col gap-2">
+                <div class="flex gap-4 text-4xl font-bold items-center">
+                    <p>{{ user.username }}</p> 
+                    {% if user.profile.is_curator %}
+                        <div class="text-lg bg-emerald-500 px-2 py-1 rounded-xl flex justify-center items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+                                <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+                            </svg>
+                            <p class="px-1">Curator</p>
+                        </div>
+                    {% endif %}
                 </div>
-                <div class="flex flex-col gap-2">
-                    <label for="password1" class="text-2xl font-bold">Password</label>
-                    <input type="password" name="password1" id="password1" class="block w-full p-2 rounded-lg bg-neutral-700 text-white" />
+                <p class="text-xl">Joined on {{ user.date_joined.date }}</p>
+            </div>
+        </div>
+        <div class="flex flex-col justify-center items-center gap-4">
+            <h1 class="text-2xl">Favorite Books</h1>
+            {% for rating in top5ratings %}
+            <div class="{% if forloop.counter == 1 %} bg-amber-500 {% elif forloop.counter == 2 %} bg-gray-400 {% elif forloop.counter == 3 %} bg-amber-900 {% else %} bg-neutral-600 {% endif %} flex justify-between items-center px-16 py-8 rounded-xl w-full">
+                <h2 class="text-3xl font-bold justify-self-start">#{{ forloop.counter }}</h2>
+                <div class="col-span-3">
+                    <p class="text-xl font-bold">{{rating.json_data.title}}</p>
+                    <p>by {{rating.json_data.authors.0}}</p>
                 </div>
-                <div class="flex flex-col gap-2">
-                    <label for="password2" class="text-2xl font-bold">Password Confirm</label>
-                    <input type="password" name="password2" id="password2" class="block w-full p-2 rounded-lg bg-neutral-700 text-white" />
-                </div>
-                <button type="submit" class="bg-[#356fda] text-white text-2xl font-bold p-2 rounded-lg">Register</button>
-            </form>
+                <p class="text-3xl font-bold">{{rating.rating}}</p>
+            </div>
+            {% endfor %}
         </div>
     </div>
 </div>
