@@ -17,8 +17,8 @@
             <img src="https://isaca-gwdc.org/wp-content/uploads/2016/12/male-profile-image-placeholder.png" class="rounded-full w-36 h-36">
             <div class="flex flex-col gap-2">
                 <div class="flex gap-4 text-4xl font-bold items-center">
-                    <p>{{ user.username }}</p> 
-                    {% if user.profile.is_curator %}
+                    <p>{{ user_profile.username }}</p> 
+                    {% if user_profile.profile.is_curator %}
                         <div class="text-lg bg-emerald-500 px-2 py-1 rounded-xl flex justify-center items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
                                 <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
@@ -27,19 +27,19 @@
                         </div>
                     {% endif %}
                 </div>
-                <p class="text-xl">Joined on {{ user.date_joined.date }}</p>
+                <p class="text-xl">Joined on {{ user_profile.date_joined.date }}</p>
             </div>
         </div>
         <div class="flex flex-col justify-center items-center gap-4">
             <h1 class="text-2xl">Favorite Books</h1>
             {% for rating in top5ratings %}
-            <div class="{% if forloop.counter == 1 %} bg-amber-500 {% elif forloop.counter == 2 %} bg-gray-400 {% elif forloop.counter == 3 %} bg-amber-900 {% else %} bg-neutral-600 {% endif %} flex justify-between items-center px-16 py-8 rounded-xl w-full">
+            <div class="{% if forloop.counter == 1 %} bg-amber-500 {% elif forloop.counter == 2 %} bg-gray-400 {% elif forloop.counter == 3 %} bg-amber-900 {% else %} bg-neutral-600 {% endif %} grid grid-cols-5 justify-between items-center px-16 py-8 rounded-xl w-2/3">
                 <h2 class="text-3xl font-bold justify-self-start">#{{ forloop.counter }}</h2>
                 <div class="col-span-3">
                     <p class="text-xl font-bold">{{rating.json_data.title}}</p>
                     <p>by {{rating.json_data.authors.0}}</p>
                 </div>
-                <p class="text-3xl font-bold">{{rating.rating}}</p>
+                <p class="text-3xl font-bold justify-self-end">{{rating.rating}}<span class="text-lg font-normal">/5.0</span></p>
             </div>
             {% endfor %}
         </div>

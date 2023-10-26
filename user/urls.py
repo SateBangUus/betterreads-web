@@ -3,6 +3,6 @@ from user.views import user_profile, become_curator
 
 app_name = 'user'
 urlpatterns = [
-    path('profile/', user_profile, name='profile'),
-    path('curator/', become_curator, name='become_curator')
+    path('curator/', become_curator, name='become_curator'),
+    path('profile/<str:username>', user_profile, name='user_profile')
 ]
