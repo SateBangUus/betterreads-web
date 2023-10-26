@@ -9,8 +9,8 @@ from api.views import get_book
 
 # Create your views here.
 @login_required(login_url='/auth/login/')
-def user_profile(request, username):
-    user_profile = User.objects.get(username=username)
+def user_profile(request, username=""):
+    user_profile = request.user or User.objects.get(username=username)
     top5ratings = [
         {"rating": book.rating, "json_data": json.loads(get_book(request, book.book_id).content)['volumeInfo']} for book in Rating.objects.filter(user=user_profile).order_by('-rating')[:5]
     ]
