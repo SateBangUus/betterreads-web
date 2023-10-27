@@ -30,3 +30,4 @@ def become_curator(request):
     user.profile.save()
 
     return JsonResponse({"is_curator": user.profile.is_curator})
+
