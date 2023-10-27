@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'authentication',
     'book',
     'user',
-    'api',
     'buy',
 ]
 
