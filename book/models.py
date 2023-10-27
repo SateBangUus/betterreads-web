@@ -9,6 +9,3 @@ class Book(models.Model):
     description = models.TextField()
     genre = models.CharField(max_length=100)
     image_link = models.CharField(max_length=100)
-    
-    def __str__(self):
-        return self.title
