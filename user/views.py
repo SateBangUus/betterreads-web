@@ -5,7 +5,6 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from user.models import Rating
-from api.views import get_book
 
 # Create your views here.
 @login_required(login_url='/auth/login/')
@@ -15,7 +14,7 @@ def user_profile(request, username=""):
     except User.DoesNotExist:
         user_profile = request.user
     top5ratings = [
-        {"rating": book.rating, "json_data": json.loads(get_book(request, book.book_id).content)['volumeInfo']} for book in Rating.objects.filter(user=user_profile).order_by('-rating')[:5]
+        # {"rating": book.rating, "json_data": json.loads(get_book(request, book.book_id).content)['volumeInfo']} for book in Rating.objects.filter(user=user_profile).order_by('-rating')[:5]
     ]
     context = {
         "user_profile": user_profile,
