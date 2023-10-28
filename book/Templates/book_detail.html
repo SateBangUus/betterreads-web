@@ -1,125 +1,71 @@
+<!-- book_detail.html -->
 {% extends 'base.html' %}
-{% block meta %}
-{% endblock meta %}
 
 {% block content %}
-<div class="container mx-auto p-8">
-    <nav class="bg-neutral-600 p-8 rounded-b-xl">
-        <a href="/"></a>" class="text-4xl font-black text-[#236bf1]">Better<span class="text-[#ec2f3f]">Reads</span></a>
-    </nav>
-    <!-- Informasi Buku (sesuka hati aja)-->
-    <div class="mb-4">
-        <h1 class="text-3xl font-bold">{{book.title}}</h1>
-        <p class="text-gray-600">Author: {{book.author}}</p>
-        <p class="text-gray-600">Description: {{book.description}}</p>
-    </div>
-
-    <!-- Tombol "Add Review" untuk menampilkan modal -->
-    <button id="add-review-button" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        data-book-url="{% url 'book:add_review' book_id=book.id %}">Add Review</button>
-
-    <!-- Modal Penambahan Ulasan -->
-    <div id="review-modal" class="fixed inset-0 flex items-center justify-center hidden">
-        <div class="modal-dialog bg-white w-1/2 rounded-lg shadow-lg">
-            <div class="modal-header bg-gray-200 py-2 px-4 rounded-t-lg">
-                <h2 class="text-xl font-bold">Add Review</h2>
-                <button id="close-modal"
-                    class="float-right text-xl font-bold text-gray-500 hover:text-gray-700">&times;</button>
-            </div>
-            <div class="modal-content p-4">
-                <form id="review-form">
-                    {% csrf_token %}
-                    <input type="hidden" name="book_id" value="{{ book.id }}">
-                    <div class="mb-4">
-                        <label for="description" class="block text-gray-700 text-sm font-bold">Review:</label>
-                        <textarea id="description" name="description" rows="4"
-                            class="w-full p-2 border rounded text-[#236bf1]"></textarea>
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold">Rating (1.0 - 5.0):</label>
-                        <input type="number" id="rating" name="rating" step="0.1" min="1" max="5"
-                            class="w-full p-2 border rounded text-[#236bf1]">
-                    </div>
-                    <button type="submit" class="bg-blue-500 text-black px-4 py-2 rounded hover:bg-blue-600">Submit
-                        Review</button>
-                </form>
-            </div>
+<div class="flex flex-col">
+    <div class="grid grid-cols-1 gap-8">
+        <div class="p-4 bg-white rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            <img class="rounded-lg w-[180px] h-[180px]" src="{{ book.image_link }}" alt="{{ book.title }}" />
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mt-4">{{ book.title }}</h2>
+            <p class="text-xl text-gray-700 dark:text-gray-400">{{ book.author }}</p>
+            <p class="text-lg text-gray-700 dark:text-gray-400">{{ book.publisher }}</p>
+            <p class="text-lg text-gray-700 dark:text-gray-400">{{ book.published_date }}</p>
+            <p class="text-lg text-gray-700 dark:text-gray-400">{{ book.genre }}</p>
+            <p class="text-lg text-gray-700 dark:text-gray-400">{{ book.description }}</p>
         </div>
-    </div>
 
-    <div id="reviews-container" class="mt-8">
-        <h2 class="text-2xl font-bold">Reviews</h2>
-        <ul id="reviews-list"></ul>
+        <div class="p-4 bg-white rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Reviews</h3>
+            <ul id="reviews-list">
+                {% for review in reviews %}
+                    <li class="mb-4">
+                        <p class="text-lg text-gray-900 dark:text-white">{{ review.user.username }}</p>
+                        <p class="text-lg text-gray-700 dark:text-gray-400">{{ review.description }}</p>
+                        <p class="text-lg text-gray-700 dark:text-gray-400">Rating: {{ review.rating }}</p>
+                        <button class="like-button" data-review-id="{{ review.id }}" data-action="like">Like</button>
+                        <button class="like-button" data-review-id="{{ review.id }}" data-action="dislike">Dislike</button>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Nicer Review Form -->
+        <div class="p-4 bg-white rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Write a Review</h3>
+            <form id="review-form">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="description" class="text-lg text-gray-900 dark:text-white">Your Review</label>
+                    <textarea name="description" id="description" rows="4" class="form-textarea dark:text-black"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="rating" class="text-lg text-gray-900 dark:text-white">Rating (1-5)</label>
+                    <input type="number" name="rating" id="rating" class="form-input" min="1" max="5">
+                </div>
+                <button type="submit" class="bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-800">Post Review</button>
+            </form>
+        </div>
     </div>
 </div>
 
 <script>
-    $(document).ready(function () {
-        var bookUrl;
+    // JavaScript to handle review form submission and dynamic display
+    document.getElementById("review-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const description = document.getElementById("description").value;
+        const rating = document.getElementById("rating").value;
 
-        // untuk menampilkan ulasan secara async
-        function loadReviews() {
-            $.ajax({
-                url: `{% url 'book:get_reviews' book_id=book.id %}`,
-                type: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    const reviewsContainer = $('#reviews-list');
-                    reviewsContainer.empty();
+        // Create a new review element with the entered data
+        const reviewElement = document.createElement("div");
+        reviewElement.className = "bg-blue-200 text-black p-2 rounded-lg mt-2";
+        reviewElement.textContent = `Rating: ${rating} - ${description}`;
 
-                    data.forEach((review) => {
-                        const listItem = `
-                    <li>
-                        <p><strong>Rating: ${review.rating}</strong></p>
-                        <p>Review: ${review.description}</p>
-                        <p>Username: ${review.user}</p>
-                    </li>`;
-                        reviewsContainer.append(listItem);
-                    });
-                },
-                error: function (error) {
-                    console.error('Gagal memuat ulasan:', error);
-                }
-            });
-        }
+        // Append the new review element to the reviews list
+        document.getElementById("reviews-list").appendChild(reviewElement);
 
-        // Menampilkan modal saat tombol "Add Review" diklik
-        $('#add-review-button').click(function () {
-            $('#review-modal').removeClass('hidden');
-            // Mengambil nilai atribut data-book-url
-            bookUrl = $(this).data('book-url'); // Setel nilai bookUrl
-
-            loadReviews(); // Memanggil loadReviews saat tombol "Add Review" diklik
-        });
-
-        // Menyembunyikan modal saat ikon close diklik
-        $('#close-modal').click(function () {
-            $('#review-modal').addClass('hidden');
-        });
-
-        // Menyembunyikan modal saat mengklik di luar modal
-        $(window).click(function (event) {
-            if (event.target === $('#review-modal')[0]) {
-                $('#review-modal').addClass('hidden');
-            }
-        });
-
-        // Menangani pengiriman form secara asinkron
-        $('#review-form').submit(function (e) {
-            e.preventDefault();
-            $.ajax({
-                url: bookUrl, 
-                type: 'POST',
-                data: $(this).serialize(),
-                success: function (data) {
-                    $('#review-form')[0].reset(); 
-                    $('#review-modal').addClass('hidden');  
-                    loadReviews(); 
-                }
-            });
-        });
-
-        loadReviews(); 
+        // Clear the review form
+        document.getElementById("description").value = "";
+        document.getElementById("rating").value = "";
     });
 </script>
-{% endblock content %}
+{% endblock %}
