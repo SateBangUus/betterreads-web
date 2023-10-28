@@ -2,14 +2,42 @@
 
 {% block content %}
 <div class="flex flex-col w-screen h-screen">
-    <nav class="bg-neutral-600 p-8 rounded-b-xl">
+    <nav class=" bg-neutral-600 px-8 py-6 rounded-b-xl grid grid-cols-3 justify-between items-center">
         <a href="/" class="text-4xl font-black text-[#236bf1]">Better<span class="text-[#ec2f3f]">Reads</span></a>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <form id="search-form">
-                <input type="text" id="search-input" placeholder="Search..." />
-                <button type="submit">Search</button>
-              </form>
+        <input class="bg-neutral-500 rounded-xl">
+        <div class="flex flex-col justify-center items-end">
+            <p class="text-2xl font-bold">Hello, <a href="/user/profile/">{{ user.username }}</a>!</p>
+            <a href="/auth/logout/">Logout</a>
         </div>
     </nav>
-</div>
+    <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700" id="blog-container">
+        {% for books in data %}
+        {% endfor %}  
+    </div>
+    </div>
+    
+      <script>
+         async function getBooks() {
+            return fetch("{% url 'buy:get_product_json' %}").then((res) => res.json())
+        }
+        const products = await getBooks()
+
+        const blogContainer = document.getElementById("blog-container");
+
+        // Loop through the blogData array and generate HTML for each item
+        products.forEach((item) => {
+            const blogItem = document.createElement("div");
+            blogItem.className = "p-5";
+
+            blogItem.innerHTML = `
+            <a href="${item.image_link}">
+                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${item.title}</h5>
+            </a>
+            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">${item.author}</p>
+            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">${item.description}</p>
+            `;
+
+            blogContainer.appendChild(blogItem);
+        });
+      </script>
 {% endblock %}

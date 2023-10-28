@@ -33,10 +33,10 @@ class Command(BaseCommand):
                     title=book_data.get('title', ''),
                     author=','.join(book_data.get('authors', [])),
                     publisher=book_data.get('publisher', ''),
-                    published_date=book_data.get('publishedDate',''),
+                    published_date=book_data.get('publishedDate', ''),
                     description=book_data.get('description', ''),
                     genre=category,
-                    image_link=book_data.get('imageLinks', {}).get('thumbnail', '')
+                    image_link=book_data.get('imageLinks', {}).get('thumbnail', '').replace("zoom=1", "zoom=10")
                 )
 
     def handle(self, *args, **kwargs):
