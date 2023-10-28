@@ -11,15 +11,15 @@
         </div>
     </nav>
     <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700" id="blog-container">
-        {% for books in data %}
-        {% endfor %}  
+
     </div>
     </div>
     
       <script>
          async function getBooks() {
-            return fetch("{% url 'buy:get_product_json' %}").then((res) => res.json())
+            return fetch("get-product").then((res) => res.json())
         }
+        async function refreshProducts() {
         const products = await getBooks()
 
         const blogContainer = document.getElementById("blog-container");
@@ -30,7 +30,7 @@
             blogItem.className = "p-5";
 
             blogItem.innerHTML = `
-            <a href="${item.image_link}">
+            <a href="${item.image}">
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${item.title}</h5>
             </a>
             <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">${item.author}</p>
@@ -38,6 +38,9 @@
             `;
 
             blogContainer.appendChild(blogItem);
-        });
+        })};
+        document.addEventListener("DOMContentLoaded", function () {
+    refreshProducts();
+});
       </script>
 {% endblock %}
