@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% block meta %}
+{% endblock meta %}
+
+{% block content %}
+<div class="container mx-auto p-8">
+    <nav class="bg-neutral-600 p-8 rounded-b-xl">
+        <a href="/"></a>" class="text-4xl font-black text-[#236bf1]">Better<span class="text-[#ec2f3f]">Reads</span></a>
+    </nav>
+    <!-- Informasi Buku (sesuka hati aja)-->
+    <div class="mb-4">
+        <h1 class="text-3xl font-bold">{{book.title}}</h1>
+        <p class="text-gray-600">Author: {{book.author}}</p>
+        <p class="text-gray-600">Description: {{book.description}}</p>
+    </div>
+
+    <!-- Tombol "Add Review" untuk menampilkan modal -->
+    <button id="add-review-button" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        data-book-url="{% url 'book:add_review' book_id=book.id %}">Add Review</button>
+
+    <!-- Modal Penambahan Ulasan -->
+    <div id="review-modal" class="fixed inset-0 flex items-center justify-center hidden">
+        <div class="modal-dialog bg-white w-1/2 rounded-lg shadow-lg">
+            <div class="modal-header bg-gray-200 py-2 px-4 rounded-t-lg">
+                <h2 class="text-xl font-bold">Add Review</h2>
+                <button id="close-modal"
+                    class="float-right text-xl font-bold text-gray-500 hover:text-gray-700">&times;</button>
+            </div>
+            <div class="modal-content p-4">
+                <form id="review-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="book_id" value="{{ book.id }}">
+                    <div class="mb-4">
+                        <label for="description" class="block text-gray-700 text-sm font-bold">Review:</label>
+                        <textarea id="description" name="description" rows="4"
+                            class="w-full p-2 border rounded text-[#236bf1]"></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold">Rating (1.0 - 5.0):</label>
+                        <input type="number" id="rating" name="rating" step="0.1" min="1" max="5"
+                            class="w-full p-2 border rounded text-[#236bf1]">
+                    </div>
+                    <button type="submit" class="bg-blue-500 text-black px-4 py-2 rounded hover:bg-blue-600">Submit
+                        Review</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="reviews-container" class="mt-8">
+        <h2 class="text-2xl font-bold">Reviews</h2>
+        <ul id="reviews-list"></ul>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var bookUrl;
+
+        // untuk menampilkan ulasan secara async
+        function loadReviews() {
+            $.ajax({
+                url: `{% url 'book:get_reviews' book_id=book.id %}`,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    const reviewsContainer = $('#reviews-list');
+                    reviewsContainer.empty();
+
+                    data.forEach((review) => {
+                        const listItem = `
+                    <li>
+                        <p><strong>Rating: ${review.rating}</strong></p>
+                        <p>Review: ${review.description}</p>
+                        <p>Username: ${review.user}</p>
+                    </li>`;
+                        reviewsContainer.append(listItem);
+                    });
+                },
+                error: function (error) {
+                    console.error('Gagal memuat ulasan:', error);
+                }
+            });
+        }
+
+        // Menampilkan modal saat tombol "Add Review" diklik
+        $('#add-review-button').click(function () {
+            $('#review-modal').removeClass('hidden');
+            // Mengambil nilai atribut data-book-url
+            bookUrl = $(this).data('book-url'); // Setel nilai bookUrl
+
+            loadReviews(); // Memanggil loadReviews saat tombol "Add Review" diklik
+        });
+
+        // Menyembunyikan modal saat ikon close diklik
+        $('#close-modal').click(function () {
+            $('#review-modal').addClass('hidden');
+        });
+
+        // Menyembunyikan modal saat mengklik di luar modal
+        $(window).click(function (event) {
+            if (event.target === $('#review-modal')[0]) {
+                $('#review-modal').addClass('hidden');
+            }
+        });
+
+        // Menangani pengiriman form secara asinkron
+        $('#review-form').submit(function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: bookUrl, 
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function (data) {
+                    $('#review-form')[0].reset(); 
+                    $('#review-modal').addClass('hidden');  
+                    loadReviews(); 
+                }
+            });
+        });
+
+        loadReviews(); 
+    });
+</script>
+{% endblock content %}
