@@ -6,7 +6,7 @@
         <a href="/" class="text-4xl font-black text-[#236bf1]">Better<span class="text-[#ec2f3f]">Reads</span></a>
         <input class="bg-neutral-500 rounded-xl">
         <div class="flex flex-col justify-center items-end">
-            <p class="text-2xl font-bold">Hello, <a href="/user/profile/">{{ user.username }}</a>!</p>
+            <p class="text-2xl font-bold">Hello, <a href="/user/profile">{{ user.username }}</a>!</p>
             <a href="/auth/logout/">Logout</a>
         </div>
     </nav>
@@ -36,28 +36,36 @@
         </div>
         <div class="flex flex-col justify-center items-center gap-4">
             <h1 class="text-3xl">Top Reviewed Books</h1>
-            {% for review in top_reviews %}
-            <div class="{% if forloop.counter == 1 %} bg-amber-500 {% elif forloop.counter == 2 %} bg-gray-400 {% elif forloop.counter == 3 %} bg-amber-900 {% else %} bg-neutral-600 {% endif %} grid grid-cols-5 justify-between items-center px-16 py-8 rounded-xl w-2/3">
-                <h2 class="text-3xl font-bold justify-self-start">#{{ forloop.counter }}</h2>
-                <div class="col-span-3">
-                    <p class="text-xl font-bold">{{review.book.title}}</p>
-                    <p>by {{review.book.author}}</p>
+            {% if top_reviews %}
+                {% for review in top_reviews %}
+                <div class="{% if forloop.counter == 1 %} bg-amber-500 {% elif forloop.counter == 2 %} bg-gray-400 {% elif forloop.counter == 3 %} bg-amber-900 {% else %} bg-neutral-600 {% endif %} grid grid-cols-5 justify-between items-center px-16 py-8 rounded-xl w-2/3">
+                    <h2 class="text-3xl font-bold justify-self-start">#{{ forloop.counter }}</h2>
+                    <div class="col-span-3">
+                        <p class="text-xl font-bold">{{review.book.title}}</p>
+                        <p>by {{review.book.author}}</p>
+                    </div>
+                    <p class="text-3xl font-bold justify-self-end">{{review.rating}}<span class="text-xl font-normal">/5.0</span></p>
                 </div>
-                <p class="text-3xl font-bold justify-self-end">{{review.rating}}<span class="text-xl font-normal">/5.0</span></p>
-            </div>
-            {% endfor %}
+                {% endfor %}
+            {% else %}
+                <h1>No reviews yet</h1>
+            {% endif %}
         </div>
         <div class="flex flex-col justify-center items-center gap-4">
             <h1 class="text-3xl">Favorite Genres to Review</h1>
-            {% for genre in fav_genres %}
-            <div class="{% if forloop.counter == 1 %} bg-amber-500 {% elif forloop.counter == 2 %} bg-gray-400 {% elif forloop.counter == 3 %} bg-amber-900 {% else %} bg-neutral-600 {% endif %} grid grid-cols-5 justify-between items-center px-16 py-8 rounded-xl w-2/3">
-                <h2 class="text-3xl font-bold justify-self-start">#{{ forloop.counter }}</h2>
-                <div class="col-span-3">
-                    <p class="text-2xl font-bold">{{genre.book__genre}}</p>
+            {% if fav_genres %}
+                {% for genre in fav_genres %}
+                <div class="{% if forloop.counter == 1 %} bg-amber-500 {% elif forloop.counter == 2 %} bg-gray-400 {% elif forloop.counter == 3 %} bg-amber-900 {% else %} bg-neutral-600 {% endif %} grid grid-cols-5 justify-between items-center px-16 py-8 rounded-xl w-2/3">
+                    <h2 class="text-3xl font-bold justify-self-start">#{{ forloop.counter }}</h2>
+                    <div class="col-span-3">
+                        <p class="text-2xl font-bold">{{genre.book__genre}}</p>
+                    </div>
+                    <p class="text-3xl font-bold justify-self-end">{{genre.genre_total}}</p>
                 </div>
-                <p class="text-3xl font-bold justify-self-end">{{genre.genre_total}}</p>
-            </div>
-            {% endfor %}
+                {% endfor %}
+            {% else %}
+                <h1>No reviews yet</h1>
+            {% endif %}
         </div>
         
     </div>

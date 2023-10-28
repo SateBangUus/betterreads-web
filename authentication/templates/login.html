@@ -21,11 +21,17 @@
                 <a href="/auth/register" class="text-xl">Don't have an account? <span class="hover:text-[#236bf1]">Register here!</span></a>
                 <button type="submit" class="bg-[#356fda] text-white text-2xl font-bold p-2 rounded-lg">Login</button>
                 {% if messages %}
-                {% for message in messages %}
-                <div class="bg-[#ec2f3f] text-white text-xl font-bold p-4 rounded-lg">
-                    {{ message }}
-                </div>
-                {% endfor %}
+                    {% for message in messages %}
+                        {% if 'success' in message %}
+                            <div class="bg-[#ec2f3f] text-white text-xl font-bold p-4 rounded-lg">
+                                {{ message }}
+                            </div>
+                        {% else %}
+                            <div class="bg-[#ec2f3f] text-white text-xl font-bold p-4 rounded-lg">
+                                {{ message }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                 {% endif %}
             </form>
         </div>

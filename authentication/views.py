@@ -22,7 +22,7 @@ def login_user(request):
 
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect('/user/profile/')
+            return HttpResponseRedirect('/user/profile')
         else:
             messages.error(request, 'Invalid username or password')
 
@@ -45,4 +45,4 @@ def register_user(request):
 def logout_user(request):
     if request.user.is_authenticated:
         logout(request)
-        return HttpResponseRedirect('/auth/login/')
+        return HttpResponseRedirect('/auth/login')
