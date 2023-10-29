@@ -4,14 +4,32 @@
 <div class="flex flex-col w-screen h-screen">
     <nav class=" bg-neutral-600 px-8 py-6 rounded-b-xl grid grid-cols-3 justify-between items-center">
         <a href="/" class="text-4xl font-black text-[#236bf1]">Better<span class="text-[#ec2f3f]">Reads</span></a>
-        <input class="bg-neutral-500 rounded-xl">
+        <div class="flex flex-col justify-center items-center">
+            <p class="text-4xl font-black text-[#111111]" style="align-items: center;">Cart</p>
+        </div>
         <div class="flex flex-col justify-center items-end">
             <p class="text-2xl font-bold">Hello, <a href="/user/profile/">{{ user.username }}</a>!</p>
             <a href="/auth/logout/">Logout</a>
         </div>
     </nav>
-    <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700" id="blog-container">
-
+    <table class="table-auto" id="blog-container">
+        <tr>
+        <th>
+            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Books</h5>
+        </th>
+        <th>
+            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Amount</h5>
+        </th>
+    </tr>
+    </table>
+    <div class="grid items-end w-full h-full">
+        <div class="flex flex-col justify-center items-center bg-neutral-100 p-4 rounded-xl shadow-lg">
+            <h5 class="text-4xl font-black text-[#236bf1]">Total Items:</h5>
+            <h5 class="text-4xl font-black text-[#236bf1]" id = "counter"></h5>
+            <a href="buy-book">
+            <button class="bg-[#236bf1] text-white font-semibold py-2 px-4 rounded-full mt-4 hover:bg-[#1655b0]" style="align-content: center;">Checkout</button>
+        </a>
+        </div>
     </div>
     </div>
     
@@ -21,26 +39,67 @@
         }
         async function refreshProducts() {
         const products = await getBooks()
-
+        let bookAmount = 0
         const blogContainer = document.getElementById("blog-container");
 
         // Loop through the blogData array and generate HTML for each item
         products.forEach((item) => {
-            const blogItem = document.createElement("div");
+            bookAmount += item.amount
+            const blogItem = document.createElement("tr");
             blogItem.className = "p-5";
 
             blogItem.innerHTML = `
-            <a href="${item.image}">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${item.title}</h5>
-            </a>
-            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">${item.author}</p>
-            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">${item.description}</p>
+            <td>
+            <div class="grid items-center w-50 rounded shadow-lg bg-[#909090]">
+                <div>
+                    <img src="${item.image}">
+                </div>
+                <div class="px-6 py-4 overflow-hidden">
+                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">${item.title}</h5>
+                    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">${item.author}</p>
+                    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">${item.genre}</p>
+                    <a href = "delete-product/${item.id}">
+                    <button class="bg-[#236bf1] text-white font-semibold py-2 px-4 rounded-lg mt-4 hover:bg-[#1655b0]" style="align-content: center;">Delete Item</button>
+                    </a>
+                </div>
+            </td>
+            <td>
+                <div class = "flex justify-center">   
+                    <a href = "decrement/${item.id}">             
+                    <button class="bg-[#236bf1] text-white font-semibold py-2 px-4 rounded-lg mt-4 hover:bg-[#1655b0]" style="align-content: center;" >-</button>
+                    </a>
+                <p>&nbsp</p>
+                <p>&nbsp</p>
+                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">${item.amount}</p>
+                <p>&nbsp</p>
+                <p>&nbsp</p>
+                <a href = "increment/${item.id}">  
+                    <button class="bg-[#236bf1] text-white font-semibold py-2 px-4 rounded-lg mt-4 hover:bg-[#1655b0]" style="align-content: center;"" >+</button>
+                    </a>
+                </div>
+            </td>
+
             `;
 
             blogContainer.appendChild(blogItem);
-        })};
+        })
+        document.getElementById("counter").innerHTML = bookAmount
+    };
         document.addEventListener("DOMContentLoaded", function () {
     refreshProducts();
 });
-      </script>
+async function increment(id){
+    fetch("/buy/increment/" + id, {
+    method: "POST",
+    }).then(refreshBooks)
+    document.querySelector('input[type=number]').stepUp()
+  }
+
+  async function decrement(id){
+    fetch("/buy/decrement/" + id, {
+        method: "POST",
+    }).then(refreshBooks)
+    document.querySelector('input[type=number]').stepUp()
+  }
+  </script>
 {% endblock %}
