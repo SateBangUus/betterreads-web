@@ -1,5 +1,5 @@
 from django.urls import reverse
-import requests, json
+from django.contrib import messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.models import User
@@ -41,6 +41,36 @@ def user_profile(request, username=""):
     }
 
     return render(request, 'profile.html', context)
+
+@login_required(login_url='/auth/login')
+def edit_profile(request):
+    user = request.user
+    if request.method == 'POST':
+        username = request.POST.get('username', '')
+        first_name = request.POST.get('first_name', '')
+        last_name = request.POST.get('last_name', '')
+        email = request.POST.get('email', '')
+
+        if username == '':
+            messages.error(request, "Username cannot be empty")
+            return render(request, 'edit.html', {'user': user})
+        if user.username != username:
+            if User.objects.filter(username=username).exists():
+                messages.error(request, "Username already exists")
+                return render(request, 'edit.html', {'user': user})
+        if email != '' and user.email != email:
+            if User.objects.filter(email=email).exists():
+                messages.error(request, "Email already exists")
+                return render(request, 'edit.html', {'user': user})
+        
+        user.username = username
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+
+        user.save()
+        return HttpResponseRedirect(reverse('user:user_profile'))
+    return render(request, 'edit.html', {'user': user})
 
 @login_required(login_url='/auth/login')
 def become_curator(request):

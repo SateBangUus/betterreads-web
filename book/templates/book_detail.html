@@ -2,12 +2,7 @@
 
 {% block content %}
 <div class="flex flex-col">
-    <nav class="bg-neutral-600 p-8 rounded-b-xl flex justify-between items-center">
-        <a href="/" class="text-4xl font-black text-[#236bf1]">Better<span class="text-[#ec2f3f]">Reads</span></a>
-        
-        <!-- Add the new text in the middle of the navbar -->
-        <div class="text-4xl text-[#236bf1] font-black text-center">Book's <span class="text-[#ec2f3f]">Description</span></div>
-    </nav>
+    {% include 'navbar.html' %}
     <div class="flex flex-col">
         <div class="grid grid-cols-1 gap-8">
             <div class="p-4 bg-white rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-row items-center text-center" style="line-height: 1.2; text-align: left;">
@@ -138,7 +133,7 @@
                 description: description,
                 rating: rating,
             }
-            
+
             fetch("{% url 'book:add_review' book_id=book.id %}", {
                 method: "POST",
                 body: JSON.stringify(params),
