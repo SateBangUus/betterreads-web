@@ -91,8 +91,8 @@
         // JavaScript to handle review form submission and dynamic display
         document.getElementById("review-form").addEventListener("submit", (event) => {
             event.preventDefault();
-            const description = document.getElementById("description").value;
-            const rating = document.getElementById("rating").value;
+            let description = document.getElementById("description").value;
+            let rating = document.getElementById("rating").value;
     
             // Create a new review element with the entered data
             const reviewElement = document.createElement("div");
@@ -110,9 +110,6 @@
             // Append the new review element to the reviews list
             document.getElementById("reviews-list").appendChild(reviewElement);
     
-            // Clear the review form
-            document.getElementById("description").value = "";
-            document.getElementById("rating").value = "";
             
             // Add click event listeners to the Like and Dislike buttons
             const likeButton = reviewElement.querySelector('[data-action="like"]');
@@ -137,16 +134,20 @@
             });
 
             // You can also add a similar logic for non-curator reviews if needed
-        });
-
-        fetch("{% url 'book:add_review' book_id=book.id %}", {
-            method: "POST",
-            body: JSON.stringify({
+            let params = {
                 description: description,
                 rating: rating,
-            }),
-        });
+            }
+            
+            fetch("{% url 'book:add_review' book_id=book.id %}", {
+                method: "POST",
+                body: JSON.stringify(params),
+            });
 
+            // Clear the review form
+            document.getElementById("description").value = "";
+            document.getElementById("rating").value = "";
+        });
     </script>
 </div>
 {% endblock %}
