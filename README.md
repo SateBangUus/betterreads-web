@@ -1,5 +1,5 @@
 # BetterReads
-
+[![Deploy](https://github.com/SateBangUus/betterreads-web/actions/workflows/pbp-deploy.yml/badge.svg)](https://github.com/SateBangUus/betterreads-web/actions/workflows/pbp-deploy.yml)
 ## Development Environment
 
 ```bash
