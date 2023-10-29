@@ -3,13 +3,13 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Book(models.Model):
-    title = models.CharField(max_length=100)
-    author = models.CharField(max_length=100)
-    publisher = models.CharField(max_length=100)
+    title = models.TextField()
+    author = models.TextField()
+    publisher = models.TextField()
     published_date = models.CharField(max_length=10, null=True)
     description = models.TextField()
-    genre = models.CharField(max_length=100)
-    image_link = models.CharField(max_length=100)
+    genre = models.TextField()
+    image_link = models.TextField()
 
 class Review(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
