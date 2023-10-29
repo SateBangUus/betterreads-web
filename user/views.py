@@ -8,7 +8,7 @@ from django.db.models import Avg, Count
 from book.models import Review
 
 # Create your views here.
-@login_required(login_url='/auth/login')
+@login_required(login_url='/auth/login/')
 def user_profile(request, username=""):
     try:
         user_profile = User.objects.get(username=username)
@@ -42,7 +42,7 @@ def user_profile(request, username=""):
 
     return render(request, 'profile.html', context)
 
-@login_required(login_url='/auth/login')
+@login_required(login_url='/auth/login/')
 def edit_profile(request):
     user = request.user
     if request.method == 'POST':
