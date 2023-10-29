@@ -40,6 +40,7 @@ class Command(BaseCommand):
                 )
 
     def handle(self, *args, **kwargs):
+        Book.objects.all().delete()
         for category in ['Fiction', 'Science', 'Drama', 'Art', 'Biography', 'History']:
             books_data = self.fetch_books(category)
             self.insert_to_db(category, books_data)
