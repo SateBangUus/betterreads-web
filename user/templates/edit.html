@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex flex-col">
+   {% include 'navbar.html' %}
+    <div class="flex flex-col gap-16 p-16 w-full h-full">
+        <h1 class="text-5xl font-bold">Edit Profile</h1>
+
+        <div class="flex flex-col justify-center items-center gap-8">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="flex flex-col gap-8">
+                    <div class="grid grid-cols-4 gap-8">
+                        <label for="username" class="text-2xl text-right">Username: </label>
+                        <input name="username" maxlength="30" class="text-black rounded-xl col-span-3" value="{{user.username}}">
+                        <label for="first_name" class="text-2xl text-right">First Name: </label>
+                        <input name="first_name" maxlength="30" class="text-black rounded-xl col-span-3" value="{{user.first_name}}">
+                        <label for="last_name" class="text-2xl text-right">Last Name: </label>
+                        <input name="last_name" maxlength="30" class="text-black rounded-xl col-span-3" value="{{user.last_name}}">
+                        <label for="email" class="text-2xl text-right">E-mail: </label>
+                        <input name="email" type="email" maxlength="30" class="text-black rounded-xl col-span-3" value="{{user.email}}">
+                        <button type="submit" class="bg-[#236bf1] px-8 py-2 rounded-full text-xl col-start-2 col-span-2">Submit</button>
+                    </div>
+                </div>
+            </form>
+            {% if messages %}
+                {% for message in messages %}
+                    {% if 'success' in message %}
+                        <div class="bg-[#ec2f3f] text-white text-xl font-bold p-4 rounded-lg">
+                            {{ message }}
+                        </div>
+                    {% else %}
+                        <div class="bg-[#ec2f3f] text-white text-xl font-bold p-4 rounded-lg">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
