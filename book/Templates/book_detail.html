@@ -1,4 +1,3 @@
-<!-- book_detail.html -->
 {% extends 'base.html' %}
 
 {% block content %}
@@ -38,21 +37,21 @@
                     <div class="mb-4">
                         <input type="number" name "rating" id="rating" class="form-input" min="1" max="5" style="color: black;">
                     </div>
-                    <button type="submit" class="bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-800" style="background-color: #0074e4;">Post Review</button>
+                    <button type="submit" class="bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg hover-bg-blue-800" style="background-color: #0074e4;">Post Review</button>
                 </form>
             </div>
 
             <div class="p-4 bg-white rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                 <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Reviews</h3>
                 <div id="reviews-list" class="grid grid-cols-5 gap-4 px-12">
-                    {% for review in reviews %}
+                    {% for review in curator_reviews %}
                         <div class="col-span-1">
                             <div class="border p-4 rounded-lg">
                                 <p class="text-lg text-gray-900 dark:text-white">{{ review.user.username }}</p>
                                 <p class="text-lg text-gray-700 dark:text-gray-400">{{ review.description }}</p>
                                 <p class="text-lg text-gray-700 dark:text-gray-400">Rating: {{ review.rating }}</p>
                                 <div class="mt-2">
-                                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded" data-action="like">Like</button>
+                                    <button class="bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded" data-action="like">Like</button>
                                     <button class="like-button bg-red-700 text-white font-semibold py-2 px-4 rounded hover-bg-red-800 border border-gray-700 ml-2" data-action="dislike">Dislike</button>
                                 </div>
                             </div>
@@ -63,7 +62,29 @@
                         {% endif %}
                     {% endfor %}
                 </div>
-            </div>  
+                
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Non-Curator Reviews</h3>
+                <div id="non-curator-reviews-list" class="grid grid-cols-5 gap-4 px-12">
+                    {% for review in non_curator_reviews %}
+                        <div class="col-span-1">
+                            <div class="border p-4 rounded-lg">
+                                <p class="text-lg text-gray-900 dark:text-white">{{ review.user.username }}</p>
+                                <p class="text-lg text-gray-700 dark:text-gray-400">{{ review.description }}</p>
+                                <p class="text-lg text-gray-700 dark:text-gray-400">Rating: {{ review.rating }}</p>
+                                <div class="mt-2">
+                                    <button class="bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded" data-action="like">Like</button>
+                                    <button class="like-button bg-red-700 text-white font-semibold py-2 px-4 rounded hover-bg-red-800 border border-gray-700 ml-2" data-action="dislike">Dislike</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% if forloop.counter|divisibleby:5 and not forloop.last %}
+                        </div>
+                        <div class="grid grid-cols-5 gap-4 px-12">
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -75,16 +96,17 @@
     
             // Create a new review element with the entered data
             const reviewElement = document.createElement("div");
-            reviewElement.className = "border p-4 rounded-lg mb-4";
+            reviewElement.className = "border p-4 rounded-lg mb-4 w-[20px]";
             reviewElement.innerHTML = `
                 <p class="text-lg text-gray-900 dark:text-white">{{ user.username }}</p>
-                <p class="text-lg text-gray-700 dark:text-gray-400">${description}</p>
+                <div style="word-wrap: break-word; overflow-wrap: break-word;">
+                    ${description}
+                </div>
                 <p class="text-lg text-gray-700 dark:text-gray-400">Rating: ${rating}</p>
                 <div class="mt-2">
-                    <button class="bg-blue-700 text-white font-semibold py-10 px-2 rounded-lg hover:bg-blue-800" style="border-color: #222; border-width: 4px;" data-action="like">Like</button>
-                    <button class="like-button bg-red-700 text-white font-semibold py-10 px-2 rounded-lg hover-bg-red-800 ml-2" style="border-color: #222; border-width: 4px;"data-action="dislike">Dislike</button>
-                `;
-            
+                <button class="bg-blue-700 text-white font-semibold py-10 px-2 rounded-lg hover-bg-blue-800" style="border-color: #222; border-width: 4px;" data-action="like">Like</button>
+                <button class="like-button bg-red-700 text-white font-semibold py-10 px-2 rounded-lg hover-bg-red-800 ml-2" style="border-color: #222; border-width: 4px;" data-action="dislike">Dislike</button>
+            `;
             // Append the new review element to the reviews list
             document.getElementById("reviews-list").appendChild(reviewElement);
     
@@ -113,7 +135,18 @@
                     likeButton.style.backgroundColor = ""; // Reset the Like button's background
                 }
             });
+
+            // You can also add a similar logic for non-curator reviews if needed
         });
+
+        fetch("{% url 'book:add_review' book_id=book.id %}", {
+            method: "POST",
+            body: JSON.stringify({
+                description: description,
+                rating: rating,
+            }),
+        });
+
     </script>
 </div>
 {% endblock %}
