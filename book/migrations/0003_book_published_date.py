@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='book',
             name='published_date',
-            field=models.CharField(default='', max_length=10, , null=True),
+            field=models.CharField(default='', max_length=10, null=True),
             preserve_default=False,
         ),
     ]

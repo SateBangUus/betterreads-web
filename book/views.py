@@ -19,15 +19,19 @@ def book_detail(request, book_id):
 @login_required
 def add_review(request, book_id):
     if request.method == 'POST' and request.is_ajax():
+        # Get the logged-in user
+        user = request.user
         book = Book.objects.get(pk=book_id)
         description = request.POST.get('description', '')
         rating = float(request.POST.get('rating', 0))
 
         if 1.0 <= rating <= 5.0:
-            review = Review.objects.create(book=book, user=request.user, description=description, rating=rating)
+            # Create a new review associated with the logged-in user
+            review = Review.objects.create(book=book, user=user, description=description, rating=rating)
             return JsonResponse({'status': 'success', 'message': 'Review added successfully'})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid data'})
+
 
 def get_reviews(request, book_id):
     book = get_object_or_404(Book, pk=book_id)
