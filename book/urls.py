@@ -8,5 +8,7 @@ urlpatterns = [
     path('<int:book_id>/add_reviews', views.add_review, name='add_review'),
     #path('curator-section/', views.curator_section, name='curator_section'),
     path('<int:book_id>/get-reviews/', views.get_reviews, name='get_reviews'),
+    path('<int:book_id>/delete_review/', views.delete_review, name='delete_review'),
+
 
 ]

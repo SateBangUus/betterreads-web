@@ -69,3 +69,22 @@ def get_reviews(request, book_id):
     ]
     
     return JsonResponse(data, safe=False)
+
+@login_required
+@csrf_exempt
+def delete_review(request):
+    if request.method == 'POST':
+        body = json.loads(request.body)
+        review_id = body.get('review_id')
+
+        try:
+            review = Review.objects.get(id=review_id)
+            if review.user == request.user:
+                review.delete()
+                return JsonResponse({'status': 'success', 'message': 'Review deleted successfully'})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'You are not authorized to delete this review'})
+        except Review.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Review not found'})
+    
+    return JsonResponse({'status': 'error', 'message': 'Invalid data'})

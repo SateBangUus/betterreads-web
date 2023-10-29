@@ -14,7 +14,7 @@
                 <div class="w-[240px]">
                     <img class="rounded-lg" src="{{ book.image_link }}" alt="{{ book.title }}" style="width: 850px; height: auto;">
                 </div>
-                <div class="ml-4 mr-5" style="margin-left: 50px; margin-right: 500px;">
+                <div class="ml-4 mr-5" style="margin-left: 50px; margin-right: 300px;">
                     <h2 class="text-3xl font-bold text-gray-900 dark:text-white">{{ book.title }}</h2>
                     <p class="text-xl text-gray-700 dark:text-gray-400">{{ book.author }}</p>
                     <p class="text-lg text-gray-700 dark:text-gray-400">{{ book.publisher }}</p>
@@ -53,6 +53,9 @@
                                 <div class="mt-2">
                                     <button class="bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded" data-action="like">Like</button>
                                     <button class="like-button bg-red-700 text-white font-semibold py-2 px-4 rounded hover-bg-red-800 border border-gray-700 ml-2" data-action="dislike">Dislike</button>
+                                    {% if review.user == user %}
+                                    <button class="bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg hover-bg-blue-800" style="background-color: #0074e4;" data-action="delete" data-review-id="{{ review.id }}">Delete</button>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -62,6 +65,7 @@
                         {% endif %}
                     {% endfor %}
                 </div>
+                
                 
                 <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Non-Curator Reviews</h3>
                 <div id="non-curator-reviews-list" class="grid grid-cols-5 gap-4 px-12">
@@ -104,13 +108,13 @@
                 </div>
                 <p class="text-lg text-gray-700 dark:text-gray-400">Rating: ${rating}</p>
                 <div class="mt-2">
-                <button class="bg-blue-700 text-white font-semibold py-10 px-2 rounded-lg hover-bg-blue-800" style="border-color: #222; border-width: 4px;" data-action="like">Like</button>
+                <button class="like-button bg-blue-700 text-white font-semibold py-10 px-2 rounded-lg hover-bg-blue-800" style="border-color: #222; border-width: 4px;" data-action="like">Like</button>
                 <button class="like-button bg-red-700 text-white font-semibold py-10 px-2 rounded-lg hover-bg-red-800 ml-2" style="border-color: #222; border-width: 4px;" data-action="dislike">Dislike</button>
             `;
+    
             // Append the new review element to the reviews list
             document.getElementById("reviews-list").appendChild(reviewElement);
     
-            
             // Add click event listeners to the Like and Dislike buttons
             const likeButton = reviewElement.querySelector('[data-action="like"]');
             const dislikeButton = reviewElement.querySelector('[data-action="dislike"]');
@@ -123,7 +127,7 @@
                     dislikeButton.style.backgroundColor = ""; // Reset the Dislike button's background
                 }
             });
-            
+    
             dislikeButton.addEventListener("click", () => {
                 if (dislikeButton.style.backgroundColor === "red") {
                     dislikeButton.style.backgroundColor = ""; // Reset the Dislike button's background
@@ -132,22 +136,52 @@
                     likeButton.style.backgroundColor = ""; // Reset the Like button's background
                 }
             });
-
+    
             // You can also add a similar logic for non-curator reviews if needed
             let params = {
                 description: description,
                 rating: rating,
             }
-            
+    
             fetch("{% url 'book:add_review' book_id=book.id %}", {
                 method: "POST",
                 body: JSON.stringify(params),
             });
-
+    
             // Clear the review form
             document.getElementById("description").value = "";
             document.getElementById("rating").value = "";
         });
+        // Add event listener for review deletion
+document.querySelectorAll(".delete-button").forEach((deleteButton) => {
+    deleteButton.addEventListener("click", (event) => {
+        const reviewId = event.target.getAttribute("data-review-id");
+
+        // You can confirm the deletion with a popup or directly delete the review
+        if (confirm("Are you sure you want to delete this review?")) {
+            // Send an AJAX request to delete the review
+            fetch("{% url 'book:delete_review' book_id=book.id %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                },
+                body: JSON.stringify({ review_id: reviewId }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.status === "success") {
+                        // Review deleted successfully, you can remove it from the UI
+                        event.target.parentElement.parentElement.remove();
+                    } else {
+                        alert("Failed to delete the review");
+                    }
+                });
+        }
+    });
+});
+
     </script>
+    
+    
 </div>
 {% endblock %}
