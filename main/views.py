@@ -19,11 +19,11 @@ def show_main(request):
 def search_books(request):
     search_term = request.GET.get('search_term', '')
     filtered_books = Book.objects.filter(title__icontains=search_term)
-    book_data = [{'title': book.title, 'author': book.author, 'publisher': book.publisher, 'description': book.description, 'genre': book.genre, 'image_link': book.image_link} for book in filtered_books]
+    book_data = [{'title': book.title, 'author': book.author, 'publisher': book.publisher, 'description': book.description, 'genre': book.genre, 'image_link': book.image_link, 'id': book.id} for book in filtered_books]
     return JsonResponse({'books': book_data})
 
 def search_books_blank(request):
     search_term = request.GET.get('search_term', '')
     filtered_books = Book.objects.filter(title__icontains=search_term).order_by('title')
-    book_data = [{'title': book.title, 'author': book.author, 'publisher': book.publisher, 'description': book.description, 'genre': book.genre, 'image_link': book.image_link} for book in filtered_books]
+    book_data = [{'title': book.title, 'author': book.author, 'publisher': book.publisher, 'description': book.description, 'genre': book.genre, 'image_link': book.image_link, 'id': book.id} for book in filtered_books]
     return JsonResponse({'books': book_data})
