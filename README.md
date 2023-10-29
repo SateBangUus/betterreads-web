@@ -1,4 +1,4 @@
-# BetterReads
+# [BetterReads](http://betterreads-k3-tk.pbp.cs.ui.ac.id/)
 [![Deploy](https://github.com/SateBangUus/betterreads-web/actions/workflows/pbp-deploy.yml/badge.svg)](https://github.com/SateBangUus/betterreads-web/actions/workflows/pbp-deploy.yml)
 ## Development Environment
 
