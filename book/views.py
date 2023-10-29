@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt  # Import csrf_exempt
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+import json
 
 # View to display a list of all books
 def book_list(request):
@@ -37,7 +38,7 @@ def add_review(request, book_id):
         # Get the logged-in user
         user = request.user
         book = Book.objects.get(pk=book_id)
-
+        body = json.loads(request.body)
         # Check if the user has already reviewed the book
         existing_review = Review.objects.filter(book=book, user=user).first()
 
@@ -45,12 +46,12 @@ def add_review(request, book_id):
             # If the user has already reviewed the book, you can return an error response
             return JsonResponse({'status': 'error', 'message': 'You have already reviewed this book'})
 
-        description = request.POST.get('description', '')
-        rating = float(request.POST.get('rating', 0))
+        description = body.get('description', '')
+        rating = float(body.get('rating', 0))
 
         if 1.0 <= rating <= 5.0:
             # Create a new review associated with the logged-in user
-            review = Review.objects.create(book=book, user=user, description=description, rating=rating)
+            Review.objects.create(book=book, user=user, description=description, rating=rating)
             return JsonResponse({'status': 'success', 'message': 'Review added successfully'})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid data'})
