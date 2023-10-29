@@ -36,7 +36,7 @@ class Command(BaseCommand):
                     published_date=book_data.get('publishedDate', ''),
                     description=book_data.get('description', ''),
                     genre=category,
-                    image_link=book_data.get('imageLinks', {}).get('thumbnail', '').replace("zoom=1", "zoom=10")
+                    image_link=f"https://books.google.com/books/publisher/content/images/frontcover/{book.get('id', '')}?fife=w600"
                 )
 
     def handle(self, *args, **kwargs):

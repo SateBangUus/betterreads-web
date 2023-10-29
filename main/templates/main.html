@@ -1,14 +1,117 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="min-w-screen h-screen bg-neutral-800 text-white flex flex-col justify-between items-center p-4">
-    <div></div>
-    <div class="flex flex-col justify-center items-center">
-        <h1 class="text-9xl font-black text-[#2853a5] hover:drop-shadow-[0_20px_20px_rgb(0,0,0,0.5)] hover:scale-105 transition-all">Better<span class="text-[#ef4b5a]">Reads</span></h1>
-        <p class="text-3xl">coming soon</p>
-    </div>
-    <div class="text-neutral-500">
+{% include 'navbar.html' %}
+<div class="min-w-screen h-screen bg-neutral-800 text-white flex flex-col justify-between items-center p-4 gap-8">
+    <div class="text-white-800 gap-8">
+        <div class="text-xl mb-2">Search :</div>
+        <input type="text" id="book-search" class="bg-neutral-500 rounded-xl">
+     </div>
+    <div id="book-list" class="grid grid-cols-5 gap-8">
+        {% for book in books %}
+        <div class="grid items-center w-50 rounded shadow-lg bg-[#909090]">
+            <div>
+                <img src="{{ book.image_link }}">
+             </div>
+            <div class="px-6 py-4 overflow-hidden">
+                <div class="font-bold text-xl mb-2"> {{book.title}} </div>
+                <div class="font-bold text-x2 mb-2 text-blue-700">{{book.author}}</div>
+                <p class="text-white-700 text-base truncate">
+                    {{book.description}}
+                </p>
+                <div class="font-bold text-x2 mb-3 text-[#ef4b5a]">{{book.publisher}}</div>
+             </div>
+            <div class="px-6 pt-4 pb-2">
+                <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{{book.genre}}</span>
+                <a href="/" class="bg-blue-500 text-white rounded-full px-3 py-1 text-sm font-semibold text-center mr-2 mb-2">Details</a>
+            </div>
+         </div>
+        {% endfor %}
+     </div>
+    <div class="text-neutral-500 gap-8">
         <p>Muhammad Oka - Ferdinand Raja Kenedy - Andika Pramudya Wardana - Rafif Firmansyah Aulia</p>
-    </div>
-</div>
+     </div>
+ </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $('#book-search').on('input', function () {
+            var searchTerm = $(this).val();
+            filterBooks(searchTerm);
+        });
+
+        function filterBooks(searchTerm) {
+            $.ajax({
+                url: '/search-books/',
+                method: 'GET',
+                data: { search_term: searchTerm },
+                success: function (data) {
+                    var bookList = $('#book-list');
+                    bookList.empty();
+
+                    if (searchTerm === '') {
+                        $.ajax({
+                            url: 'search-books-blank/',
+                            method: 'GET',
+                            success: function (oldData) {
+                                for (var i = 0; i < oldData.books.length; i++) {
+                                    var oldBook = oldData.books[i];
+                                    var oldBookHtml = '<div class="grid items-center w-50 rounded shadow-lg bg-[#909090]">'
+                                        + '<div>'
+                                        + '<img src="' + oldBook.image_link + '">'
+                                        + '</div>'
+                                        + '<div class="px-6 py-4 overflow-hidden">'
+                                        + '<div class="font-bold text-xl mb-2">' + oldBook.title + '</div>'
+                                        + '<div class="font-bold text-x2 mb-2 text-blue-700">' + oldBook.author + '</div>'
+                                        + '<p class="text-white-700 text-base truncate">'
+                                        + oldBook.description
+                                        + '</p>'
+                                        + '<div class="font-bold text-x2 mb-3 text-[#ef4b5a]">' + oldBook.publisher + '</div>'
+                                        + '</div>'
+                                        + '<div class="px-6 pt-4 pb-2">'
+                                        + '<span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">' + oldBook.genre + '</span>'
+                                        + '<a href="" class="bg-blue-500 text-white rounded-full px-3 py-1 text-sm font-semibold text-center mr-2 mb-2">Details</a>'
+                                        + '</div>'
+                                        + '</div>';
+                                    bookList.append(oldBookHtml);
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.log("An error occurred while fetching old data: " + error);
+                            }
+                        });
+                    } else {
+                        // Render data hasil pencarian ke dalam bookList
+                        for (var i = 0; i < data.books.length; i++) {
+                            var book = data.books[i];
+                            var bookHtml = '<div class="grid items-center w-50 rounded shadow-lg bg-[#909090]">'
+                                        + '<div>'
+                                        + '<img src="' + book.image_link + '">'
+                                        + '</div>'
+                                        + '<div class="px-6 py-4 overflow-hidden">'
+                                        + '<div class="font-bold text-xl mb-2">' + book.title + '</div>'
+                                        + '<div class="font-bold text-x2 mb-2 text-blue-700">' + book.author + '</div>'
+                                        + '<p class="text-white-700 text-base truncate">'
+                                        + book.description
+                                        + '</p>'
+                                        + '<div class="font-bold text-x2 mb-3 text-[#ef4b5a]">' + book.publisher + '</div>'
+                                        + '</div>'
+                                        + '<div class="px-6 pt-4 pb-2">'
+                                        + '<span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">' + book.genre + '</span>'
+                                        + '<a href="" class="bg-blue-500 text-white rounded-full px-3 py-1 text-sm font-semibold text-center mr-2 mb-2">Details</a>'
+                                        + '</div>'
+                                        + '</div>';
+                            bookList.append(bookHtml);
+                        }
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("An error occurred: " + error);
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}
