@@ -137,11 +137,7 @@
                 description: description,
                 rating: rating,
             }
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 567370a9fd491bcfe1393ebb6c442168fd6671f9
             fetch("{% url 'book:add_review' book_id=book.id %}", {
                 method: "POST",
                 body: JSON.stringify(params),
@@ -152,7 +148,7 @@
             document.getElementById("rating").value = "";
         });
         // Add event listener for review deletion
-document.querySelectorAll(".delete-button").forEach((deleteButton) => {
+    document.querySelectorAll(".delete-button").forEach((deleteButton) => {
     deleteButton.addEventListener("click", (event) => {
         const reviewId = event.target.getAttribute("data-review-id");
 
