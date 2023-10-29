@@ -7,7 +7,7 @@ class Book(models.Model):
     title = models.CharField(max_length=100)
     author = models.CharField(max_length=100)
     publisher = models.CharField(max_length=100)
-    published_date = models.CharField(max_length=10)
+    published_date = models.CharField(max_length=10, null=True)
     description = models.TextField()
     genre = models.CharField(max_length=100)
     image_link = models.CharField(max_length=100)
@@ -17,3 +17,5 @@ class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField()
     rating =  models.FloatField(validators=[MinValueValidator(1,0), MaxValueValidator(5,0)])
+    
+

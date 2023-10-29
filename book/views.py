@@ -1,54 +1,48 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from .models import Book, Review
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.shortcuts import render, get_object_or_404
-from .models import Book, Review
-import requests
-from django.shortcuts import render
+
+# View to display a list of all books
 def book_list(request):
     books = Book.objects.all()
-    return render(request, 'book/book_list.html', {'books': books})
+    return render(request, 'book_list.html', {'books': books})
 
+# View to display book details and reviews
 def book_detail(request, book_id):
-    book = get_object_or_404(Book, pk=book_id)
-    return render(request, 'book/book_detail.html', {'book': book})
+    book = Book.objects.get(pk=book_id)    
+    reviews = Review.objects.filter(book=book)
+    return render(request, 'book_detail.html', {'book': book, 'reviews': reviews})
 
+# View to add a new review for a book
+@login_required
 def add_review(request, book_id):
-    if request.method == 'POST':
-        book = get_object_or_404(Book, pk=book_id)
-        text = request.POST.get('text')
-        Review.objects.create(user=request.user, book=book, text=text)
-    return HttpResponseRedirect(reverse('book:book_detail', args=[book_id]))
+    if request.method == 'POST' and request.is_ajax():
+        # Get the logged-in user
+        user = request.user
+        book = Book.objects.get(pk=book_id)
+        description = request.POST.get('description', '')
+        rating = float(request.POST.get('rating', 0))
 
-def curator_section(request):
-    # Add curator-related content here
-    return render(request, 'book/curator_section.html')
+        if 1.0 <= rating <= 5.0:
+            # Create a new review associated with the logged-in user
+            review = Review.objects.create(book=book, user=user, description=description, rating=rating)
+            return JsonResponse({'status': 'success', 'message': 'Review added successfully'})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid data'})
 
 
-GOOGLE_BOOKS_API_URL = "https://www.googleapis.com/books/v1/volumes"
-
-def fetch_books_from_google_books_api(request):
-    # Replace 'YOUR_API_KEY' with your actual API key if you have one
-    api_key = 'YOUR_API_KEY'
-
-    # Make a request to the Google Books API to fetch book data
-    response = requests.get(f"{GOOGLE_BOOKS_API_URL}?q=YOUR_SEARCH_QUERY&key={api_key}")
-
-    if response.status_code == 200:
-        data = response.json()
-        items = data.get('items', [])
-
-        for item in items:
-            volume_info = item.get('volumeInfo', {})
-            title = volume_info.get('title', '')
-            author = ", ".join(volume_info.get('authors', []))
-            description = volume_info.get('description', '')
-
-            # Create a new book in your database based on Google Books data
-            book = Book(title=title, author=author, description=description)
-            book.save()
-
-        return render(request, 'book/success.html')
-    else:
-        return render(request, 'book/error.html')
+def get_reviews(request, book_id):
+    book = get_object_or_404(Book, pk=book_id)
+    reviews = Review.objects.filter(book=book)
+    
+    data = [
+        {
+            'rating': review.rating,
+            'description': review.description,
+        }
+        for review in reviews
+    ]
+    
+    return JsonResponse(data, safe=False)

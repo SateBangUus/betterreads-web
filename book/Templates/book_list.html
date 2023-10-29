@@ -1,8 +1,44 @@
 {% extends 'base.html' %}
+{% block meta %}
+{% endblock meta %}
 
 {% block content %}
-<div class="flex flex-col w-screen h-screen">
-    <nav class="bg-neutral-600 p-8 rounded-b-xl">
+<div class="flex flex-col">
+    <nav class="bg-neutral-600 p-8 rounded-b-xl flex justify-between items-center">
         <a href="/" class="text-4xl font-black text-[#236bf1]">Better<span class="text-[#ec2f3f]">Reads</span></a>
+        
+        <!-- Add the new text in the middle of the navbar -->
+        <div class="text-4xl text-[#236bf1] font-black text-center">List of <span class="text-[#ec2f3f]">Our Books</span></div>
     </nav>
-    
+
+    <div class="grid grid-cols-5 gap-4 px-12">
+        {% for book in books %}
+        <div class="mb-4 aspect-w-2 aspect-h-3 m-2">
+            <div class="w-full h-full p-4 bg-white rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-center items-center" style="max-width: 240px;">
+                <img class="rounded-lg w-[180px] h-[180px]" src="{{ book.image_link }}" alt="" />
+
+                <div class="p-3 flex flex-col justify-center items-center h-full">
+                    <a href="{% url 'book:book_detail' book_id=book.id %}">
+                        <h5 class="mb-2 text-lg font-bold tracking-tight text-gray-900 dark:text-white max-w-full text-center" style="line-height: 1.2; white-space: pre-line; text-align: center;">
+                            {{ book.title }}
+                        </h5>
+                    </a>
+                    <p class="mb-3 font-normal text-gray-700 dark-text-gray-400 text-center max-w-full" style="line-height: 1.2; text-align: center;">
+                        {{ book.author }}
+                    </p>
+                    <a href="{% url 'book:book_detail' book_id=book.id %}">
+                        <div class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-[#236bf1] bg-blue-700 rounded-lg hover-bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark-bg-blue-600 dark-hover-bg-blue-700 dark-focus:ring-blue-800">
+                            Read more
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% if forloop.counter|divisibleby:5 and not forloop.last %}
+        </div>
+        <div class="grid grid-cols-5 gap-4 px-12">
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}
