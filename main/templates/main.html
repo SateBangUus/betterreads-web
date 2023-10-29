@@ -2,10 +2,40 @@
 
 {% block content %}
 {% include 'navbar.html' %}
-<div class="min-w-screen h-screen bg-neutral-800 text-white flex flex-col justify-between items-center p-4 gap-8">
+
+
+<div class="min-w-screen h-screen bg-neutral-800 text-white flex flex-col justify-between items-center p-4 gap-5">
+    <div class="px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20">
+        <div class="max-w-2xl mx-auto sm:max-w-xl md:max-w-2xl">
+          <div class="text-center">
+            <div class="max-w-xl mb-4 md:mx-auto sm:text-center lg:max-w-2xl md:mb-5">
+              <h2 class="max-w-lg mb-6 font-sans text-3xl font-bold leading-none tracking-tight text-gray-900 sm:text-4xl md:mx-auto">
+                <span class="text-4x1 font-black text-[#236bf1] hover:drop-shadow-[0_20px_20px_rgb(0,0,0,0.5)] hover:scale-105 transition-all">Better<span class="text-[#ec2f3f]">Reads</span></span>
+              </h2>
+              <div class="text-x1 font-bold text-white md:text-lg">
+                Hello {{ user.username }}, Great to see you again!
+              </div>
+            </div>
+            <p class="max-w-md mx-auto mb-5 text-xs text-[#909090] sm:text-sm md:mb-5">
+                One of the key benefits of BetterReads is its integrated book review feature, allowing users to discover and contribute insightful reviews, making it easier for readers to find their next captivating read and fostering a vibrant community of literary enthusiasts.
+            </p>
+          </div>
+        </div>
+      </div>
+
+
     <div class="text-white-800 gap-8">
-        <div class="text-xl mb-2">Search :</div>
-        <input type="text" id="book-search" class="bg-neutral-500 rounded-xl">
+    
+        <div class="relative text-gray-600 focus-within:text-gray-400">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-2">
+            <button type="submit" class="p-1 focus:outline-none focus:shadow-outline">
+                <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-6 h-6"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </button>
+            </span>
+            <input id="book-search" type="search" name="q" class="py-2 text-sm text-white bg-[#909090] rounded-md pl-10 focus:outline-none focus:bg-white focus:text-gray-900" placeholder="Search..." autocomplete="off">
+        </div>
+        
+      
      </div>
     <div id="book-list" class="grid grid-cols-5 gap-8">
         {% for book in books %}
@@ -15,15 +45,12 @@
              </div>
             <div class="px-6 py-4 overflow-hidden">
                 <div class="font-bold text-xl mb-2"> {{book.title}} </div>
-                <div class="font-bold text-x2 mb-2 text-blue-700">{{book.author}}</div>
-                <p class="text-white-700 text-base truncate">
-                    {{book.description}}
-                </p>
-                <div class="font-bold text-x2 mb-3 text-[#ef4b5a]">{{book.publisher}}</div>
+                <div class="font-bold text-x2 mb-2 text-blue-700 truncate">{{book.author}}</div>
+                <div class="font-bold text-x2 mb-3 text-[#ef4b5a] truncate">{{book.publisher}}</div>
              </div>
             <div class="px-6 pt-4 pb-2">
                 <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{{book.genre}}</span>
-                <a href="/" class="bg-blue-500 text-white rounded-full px-3 py-1 text-sm font-semibold text-center mr-2 mb-2">Details</a>
+                <a href="{% url 'book:book_detail' book_id=book.id %}" class="bg-blue-500 text-white rounded-full px-3 py-1 text-sm font-semibold text-center mr-2 mb-2">Details</a>
             </div>
          </div>
         {% endfor %}
@@ -40,6 +67,12 @@
         $('#book-search').on('input', function () {
             var searchTerm = $(this).val();
             filterBooks(searchTerm);
+        });
+
+        $(document).on('click', 'a[data-book-id]', function () {
+            var bookId = $(this).data('book-id');
+            var bookDetailUrl = '/book/book-detail/' + bookId + '/'; 
+            window.location.href = bookDetailUrl;
         });
 
         function filterBooks(searchTerm) {
@@ -64,15 +97,12 @@
                                         + '</div>'
                                         + '<div class="px-6 py-4 overflow-hidden">'
                                         + '<div class="font-bold text-xl mb-2">' + oldBook.title + '</div>'
-                                        + '<div class="font-bold text-x2 mb-2 text-blue-700">' + oldBook.author + '</div>'
-                                        + '<p class="text-white-700 text-base truncate">'
-                                        + oldBook.description
-                                        + '</p>'
-                                        + '<div class="font-bold text-x2 mb-3 text-[#ef4b5a]">' + oldBook.publisher + '</div>'
+                                        + '<div class="font-bold text-x2 mb-2 text-blue-700 truncate">' + oldBook.author + '</div>'
+                                        + '<div class="font-bold text-x2 mb-3 text-[#ef4b5a] truncate">' + oldBook.publisher + '</div>'
                                         + '</div>'
                                         + '<div class="px-6 pt-4 pb-2">'
                                         + '<span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">' + oldBook.genre + '</span>'
-                                        + '<a href="" class="bg-blue-500 text-white rounded-full px-3 py-1 text-sm font-semibold text-center mr-2 mb-2">Details</a>'
+                                        + '<a data-book-id="' + oldBook.id + '" class="bg-blue-500 text-white rounded-full px-3 py-1 text-sm font-semibold text-center mr-2 mb-2">Details</a>'
                                         + '</div>'
                                         + '</div>';
                                     bookList.append(oldBookHtml);
@@ -92,15 +122,12 @@
                                         + '</div>'
                                         + '<div class="px-6 py-4 overflow-hidden">'
                                         + '<div class="font-bold text-xl mb-2">' + book.title + '</div>'
-                                        + '<div class="font-bold text-x2 mb-2 text-blue-700">' + book.author + '</div>'
-                                        + '<p class="text-white-700 text-base truncate">'
-                                        + book.description
-                                        + '</p>'
-                                        + '<div class="font-bold text-x2 mb-3 text-[#ef4b5a]">' + book.publisher + '</div>'
+                                        + '<div class="font-bold text-x2 mb-2 text-blue-700 truncate">' + book.author + '</div>'
+                                        + '<div class="font-bold text-x2 mb-3 text-[#ef4b5a] truncate">' + book.publisher + '</div>'
                                         + '</div>'
                                         + '<div class="px-6 pt-4 pb-2">'
                                         + '<span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">' + book.genre + '</span>'
-                                        + '<a href="" class="bg-blue-500 text-white rounded-full px-3 py-1 text-sm font-semibold text-center mr-2 mb-2">Details</a>'
+                                        + '<a data-book-id="' + book.id + '" class="bg-blue-500 text-white rounded-full px-3 py-1 text-sm font-semibold text-center mr-2 mb-2">Details</a>'
                                         + '</div>'
                                         + '</div>';
                             bookList.append(bookHtml);
