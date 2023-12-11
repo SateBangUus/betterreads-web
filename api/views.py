@@ -116,7 +116,7 @@ def user_stats(request):
         user = request.user
 
         reviews = [
-            {"rating": review.rating, "book": serializers.serialize("json", dict(review.book))} for review in Review.objects.filter(user=user).order_by('-rating')[:5]
+            {"rating": review.rating, "book": serializers.serialize("json", [review.book,])} for review in Review.objects.filter(user=user).order_by('-rating')[:5]
         ]
         total_review = Review.objects.filter(user=user).count()
         average_rating = round(Review.objects.filter(user=user).aggregate(Avg('rating'))['rating__avg'], 2)

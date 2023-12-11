@@ -141,3 +141,5 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TAILWIND_APP_NAME = 'theme'
+
+CSRF_TRUSTED_ORIGINS = ["https://*.pbp.cs.ui.ac.id"]
