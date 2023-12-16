@@ -145,6 +145,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 TAILWIND_APP_NAME = 'theme'
 
 CSRF_TRUSTED_ORIGINS = ["https://*.pbp.cs.ui.ac.id"]
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
