@@ -9,6 +9,8 @@ from django.core import serializers
 from book.models import Review
 from django.contrib.auth.models import User
 
+from user.models import Curator
+
 # Create your views here.
 @csrf_exempt
 def login(request):
@@ -58,7 +60,8 @@ def register(request):
         data = json.loads(request.body)
         form = UserCreationForm({"username": data['username'], "password1": data['password1'], "password2": data['password2']})
         if form.is_valid():
-            form.save()
+            user = form.save()
+            Curator.objects.create(user=user)
             return JsonResponse({
                 "status": True,
                 "message": "User successfully registered!"
@@ -90,7 +93,7 @@ def profile(request):
             "is_curator": user.profile.is_curator,
             "join_date": user.date_joined.strftime("%B %Y"),
             "top_reviews": reviews,
-            "total_reviewsl": total_review,
+            "total_reviews": total_review,
             "average_rating": average_rating,
             "fav_genres": fav_genre
         }, status=200)
