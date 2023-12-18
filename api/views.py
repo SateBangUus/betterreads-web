@@ -74,12 +74,33 @@ def profile(request):
     if request.method == "GET":
         user = request.user
 
+        reviews = [
+            {"rating": review.rating, "book": serializers.serialize("json", [review.book,])} for review in Review.objects.filter(user=user).order_by('-rating')[:5]
+        ]
+        total_review = Review.objects.filter(user=user).count()
+        average_rating = round(Review.objects.filter(user=user).aggregate(Avg('rating'))['rating__avg'], 2)
+        fav_genre = list(Review.objects.filter(user=user).values('book__genre').annotate(genre_total=Count('book__genre')).order_by('-genre_total'))
+
+        context = {
+            "join_date": user.date_joined.strftime("%B %Y"),
+            "top_reviews": reviews,
+            "total_reviewsl": total_review,
+            "average_rating": average_rating,
+            "fav_genres": fav_genre
+        }
+
         return JsonResponse({
             "username": user.username,
+            "profile_picture": "https://isaca-gwdc.org/wp-content/uploads/2016/12/male-profile-image-placeholder.png",
             "email": user.email,
             "first_name": user.first_name,
             "last_name": user.last_name,
             "is_curator": user.profile.is_curator,
+            "join_date": user.date_joined.strftime("%B %Y"),
+            "top_reviews": reviews,
+            "total_reviewsl": total_review,
+            "average_rating": average_rating,
+            "fav_genres": fav_genre
         }, status=200)
     
     elif request.method == "POST":
@@ -109,25 +130,3 @@ def profile(request):
             "status": True,
             "message": "Profile successfully updated!"
         }, status=200)
-
-@csrf_exempt
-def user_stats(request):
-    if request.method == "GET":
-        user = request.user
-
-        reviews = [
-            {"rating": review.rating, "book": serializers.serialize("json", [review.book,])} for review in Review.objects.filter(user=user).order_by('-rating')[:5]
-        ]
-        total_review = Review.objects.filter(user=user).count()
-        average_rating = round(Review.objects.filter(user=user).aggregate(Avg('rating'))['rating__avg'], 2)
-        fav_genre = list(Review.objects.filter(user=user).values('book__genre').annotate(genre_total=Count('book__genre')).order_by('-genre_total'))
-
-        context = {
-            "join_date": user.date_joined.strftime("%B %Y"),
-            "top_reviews": reviews,
-            "total_reviewsl": total_review,
-            "average_rating": average_rating,
-            "fav_genres": fav_genre
-        }
-
-        return JsonResponse(context, status=200)
