@@ -1,4 +1,4 @@
-from api.views import login, register, logout, user_stats, profile
+from api.views import login, register, logout, profile
 from django.urls import path
 
 app_name = 'api'
