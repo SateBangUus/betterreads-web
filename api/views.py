@@ -78,16 +78,8 @@ def profile(request):
             {"rating": review.rating, "book": serializers.serialize("json", [review.book,])} for review in Review.objects.filter(user=user).order_by('-rating')[:5]
         ]
         total_review = Review.objects.filter(user=user).count()
-        average_rating = round(Review.objects.filter(user=user).aggregate(Avg('rating'))['rating__avg'], 2) or 0
+        average_rating = round(Review.objects.filter(user=user).aggregate(Avg('rating'))['rating__avg'], 2) if Review.objects.filter(user=user) else 0
         fav_genre = list(Review.objects.filter(user=user).values('book__genre').annotate(genre_total=Count('book__genre')).order_by('-genre_total'))
-
-        context = {
-            "join_date": user.date_joined.strftime("%B %Y"),
-            "top_reviews": reviews,
-            "total_reviewsl": total_review,
-            "average_rating": average_rating,
-            "fav_genres": fav_genre
-        }
 
         return JsonResponse({
             "username": user.username,
