@@ -51,8 +51,31 @@ def get_product_json(request):
         })
     finaljson = json.dumps(temp)
     return HttpResponse(finaljson, content_type='application/json')
+def get_product_flutter(request):
+    book_item = Cart.objects.filter(user=request.user)
+    temp = []
+    for book in book_item:
+        temp.append({
+            "title" : book.book.title,
+            "author" : book.book.author,
+            "publisher" : book.book.publisher,
+            "published_date" : book.book.published_date,
+            "description" : book.book.description,
+            "genre" : book.book.genre,
+            "image" : book.book.image_link,
+            "amount" : book.amount,
+            "id" : book.id,
+        })
+    finaljson = json.dumps(temp)
+    return HttpResponse(finaljson, content_type='application/json')
 @csrf_exempt
 def delete_book(request,id):
     data = Cart.objects.get(pk=id)
     data.delete()
     return HttpResponseRedirect(reverse('buy:cart'))
+def show_json_by_id(request, id):
+    data = Cart.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+def show_json_flutter(request, userId):
+    data = Cart.objects.filter(user=userId)
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
