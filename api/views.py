@@ -76,6 +76,7 @@ def profile(request):
 
         return JsonResponse({
             "username": user.username,
+            "profile_picture": "https://isaca-gwdc.org/wp-content/uploads/2016/12/male-profile-image-placeholder.png",
             "email": user.email,
             "first_name": user.first_name,
             "last_name": user.last_name,
