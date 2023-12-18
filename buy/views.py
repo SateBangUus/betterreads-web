@@ -1,7 +1,7 @@
 # Create your views here.
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from buy.models import Cart
 from book.models import Book
@@ -56,6 +56,7 @@ def get_product_flutter(request):
     temp = []
     for book in book_item:
         temp.append({
+            'user': book.user.id,
             "title" : book.book.title,
             "author" : book.book.author,
             "publisher" : book.book.publisher,
@@ -68,6 +69,38 @@ def get_product_flutter(request):
         })
     finaljson = json.dumps(temp)
     return HttpResponse(finaljson, content_type='application/json')
+@csrf_exempt
+def incrementBookFlutter(request):
+    if request.method == 'POST':
+
+        data = json.loads(request.body)
+
+        book = Cart.objects.get(pk=data['id'])
+        book.book_amount += 1
+        book.save()
+
+        return JsonResponse({"status": "success"}, status=200)
+@csrf_exempt
+def decrementBookFlutter(request):
+    if request.method == 'POST':
+
+        data = json.loads(request.body)
+
+        book = Cart.objects.get(pk=data['id'])
+        if (book.book_amount > 1):
+            book.book_amount -= 1
+            book.save()
+
+        return JsonResponse({"status": "success"}, status=200)
+def deleteBookFlutter(request):
+    if request.method == 'POST':
+
+        data = json.loads(request.body)
+
+        book = Cart.objects.get(pk=data['id'])
+        book.delete()
+
+        return JsonResponse({"status": "success"}, status=200)
 @csrf_exempt
 def delete_book(request,id):
     data = Cart.objects.get(pk=id)
