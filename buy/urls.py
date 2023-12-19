@@ -1,5 +1,5 @@
 from django.urls import path
-from buy.views import incrementBook, decrementBook, buy_book, cart, get_product_json, delete_book, show_json_by_id, show_json_flutter, get_product_flutter, incrementBookFlutter,decrementBookFlutter,deleteBookFlutter
+from buy.views import incrementBook, decrementBook, buy_book, cart, get_product_json, delete_book, show_json_by_id, show_json_flutter, get_product_flutter, incrementBookFlutter,decrementBookFlutter,deleteBookFlutter,submitflutter
 app_name = 'buy'
 urlpatterns = [
     path('increment/<int:id>', incrementBook, name='increment'),
@@ -14,4 +14,5 @@ urlpatterns = [
     path('increase-book-flutter/', incrementBookFlutter, name='incremenetBookFlutter'),
     path('decrease-book-flutter/', decrementBookFlutter, name='decrementBookFlutter'),
     path('delete-book-flutter/', deleteBookFlutter, name='deleteBookFlutter'),
+    path('submit-buy/', submitflutter,name = 'submitflutter')
 ]
