@@ -73,9 +73,9 @@ def register(request):
             }, status=401)
         
 @csrf_exempt
-def profile(request):
+def profile(request, username):
     if request.method == "GET":
-        user = request.user
+        user = User.objects.get(username=username)
 
         reviews = [
             {"rating": review.rating, "book": serializers.serialize("json", [review.book,])} for review in Review.objects.filter(user=user).order_by('-rating')[:5]
