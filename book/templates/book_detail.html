@@ -82,7 +82,7 @@
                         {% endif %}
                     {% endfor %}
                 </div>
-                <button id="add-to-cart-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" style="border-radius: 15px; margin-top: 20px;">
+                <button id="add-to-cart-btn" class="bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg hover-bg-blue-800" style="background-color: #0074e4;">
                     Add to Cart
                 </button>
             </div>
@@ -192,7 +192,7 @@
         };
 
         // Send the request to your backend
-        fetch("{% url 'cart:add_to_cart' %}", { // Replace with the actual URL name
+        fetch("{% url 'book:add_to_cart' book_id=book.id %}", { // Replace with the actual URL name
             method: "POST",
             headers: {
                 "X-CSRFToken": "{{ csrf_token }}",
