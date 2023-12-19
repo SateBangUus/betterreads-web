@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt  # Import csrf_exempt
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.db.models import F
+from buy.models import Cart
 import json
 
 # View to display a list of all books
@@ -88,3 +90,25 @@ def delete_review(request):
             return JsonResponse({'status': 'error', 'message': 'Review not found'})
     
     return JsonResponse({'status': 'error', 'message': 'Invalid data'})
+
+@login_required
+@csrf_exempt
+def add_to_cart(request, book_id):
+    if request.method == 'POST':
+        user = request.user
+        book = get_object_or_404(Book, pk=book_id)
+        
+        # Attempt to get the cart item if it exists, or create a new one
+        cart_item, created = Cart.objects.get_or_create(
+            user=user, 
+            book=book, 
+            defaults={'amount': 1}
+        )
+        if not created:
+            # If the cart item exists, just increment the amount
+            cart_item.amount = F('amount') + 1
+            cart_item.save()
+
+        return JsonResponse({'status': 'success', 'message': 'Book added to cart successfully'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'This method is not allowed'}, status=405)

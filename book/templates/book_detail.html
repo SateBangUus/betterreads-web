@@ -82,6 +82,9 @@
                         {% endif %}
                     {% endfor %}
                 </div>
+                <button id="add-to-cart-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" style="border-radius: 15px; margin-top: 20px;">
+                    Add to Cart
+                </button>
             </div>
         </div>
     </div>
@@ -174,7 +177,44 @@
         }
     });
 });
+// JavaScript to handle adding a book to the cart
+    document.getElementById("add-to-cart-btn").addEventListener("click", (event) => {
+        // Prevent the default form submission
+        event.preventDefault();
+        
+        // Assuming you're storing the book ID in a data attribute or you can replace `bookId` with your actual book ID variable
+        let bookId = "{{ book.id }}";
+        
+        // Set up the request data, if needed
+        let requestData = {
+            book_id: bookId,
+            // Add other data if necessary
+        };
 
+        // Send the request to your backend
+        fetch("{% url 'cart:add_to_cart' %}", { // Replace with the actual URL name
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestData),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle any response data here
+            // For example, update the cart item count, show a message, etc.
+            if (data.status === "success") {
+                alert("Book added to cart successfully!");
+            } else {
+                alert("There was a problem adding the book to the cart.");
+            }
+        })
+        .catch(error => {
+            // Handle any errors here
+            console.error('Error:', error);
+        });
+    });
     </script>
     
     
