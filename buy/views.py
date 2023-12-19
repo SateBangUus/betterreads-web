@@ -56,7 +56,7 @@ def get_product_flutter(request):
     temp = []
     for book in book_item:
         temp.append({
-            'user': book.user.id,
+
             "title" : book.book.title,
             "author" : book.book.author,
             "publisher" : book.book.publisher,
@@ -67,8 +67,7 @@ def get_product_flutter(request):
             "amount" : book.amount,
             "id" : book.id,
         })
-    finaljson = json.dumps(temp)
-    return HttpResponse(finaljson, content_type='application/json')
+    return JsonResponse(temp)
 @csrf_exempt
 def incrementBookFlutter(request):
     if request.method == 'POST':
