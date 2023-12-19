@@ -108,6 +108,12 @@ def profile(request, username):
                     "status": False,
                     "message": "Username already exists!"
                 }, status=401)
+        if data['username'] == "":
+            if User.objects.filter(username=data['username']).exists():
+                return JsonResponse({
+                    "status": False,
+                    "message": "Username cannot be empty!"
+                }, status=401)
         if data['email'] != user.email:
             if User.objects.filter(email=data['email']).exists():
                 return JsonResponse({
