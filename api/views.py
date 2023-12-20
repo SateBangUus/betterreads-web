@@ -9,6 +9,8 @@ from django.core import serializers
 from book.models import Review
 from django.contrib.auth.models import User
 
+from user.models import Curator
+
 # Create your views here.
 @csrf_exempt
 def login(request):
@@ -58,7 +60,8 @@ def register(request):
         data = json.loads(request.body)
         form = UserCreationForm({"username": data['username'], "password1": data['password1'], "password2": data['password2']})
         if form.is_valid():
-            form.save()
+            user = form.save()
+            Curator.objects.create(user=user)
             return JsonResponse({
                 "status": True,
                 "message": "User successfully registered!"
@@ -70,24 +73,16 @@ def register(request):
             }, status=401)
         
 @csrf_exempt
-def profile(request):
+def profile(request, username):
     if request.method == "GET":
-        user = request.user
+        user = User.objects.get(username=username)
 
         reviews = [
             {"rating": review.rating, "book": serializers.serialize("json", [review.book,])} for review in Review.objects.filter(user=user).order_by('-rating')[:5]
         ]
         total_review = Review.objects.filter(user=user).count()
-        average_rating = round(Review.objects.filter(user=user).aggregate(Avg('rating'))['rating__avg'], 2)
+        average_rating = round(Review.objects.filter(user=user).aggregate(Avg('rating'))['rating__avg'], 2) if Review.objects.filter(user=user) else 0
         fav_genre = list(Review.objects.filter(user=user).values('book__genre').annotate(genre_total=Count('book__genre')).order_by('-genre_total'))
-
-        context = {
-            "join_date": user.date_joined.strftime("%B %Y"),
-            "top_reviews": reviews,
-            "total_reviewsl": total_review,
-            "average_rating": average_rating,
-            "fav_genres": fav_genre
-        }
 
         return JsonResponse({
             "username": user.username,
@@ -98,7 +93,7 @@ def profile(request):
             "is_curator": user.profile.is_curator,
             "join_date": user.date_joined.strftime("%B %Y"),
             "top_reviews": reviews,
-            "total_reviewsl": total_review,
+            "total_reviews": total_review,
             "average_rating": average_rating,
             "fav_genres": fav_genre
         }, status=200)
@@ -112,6 +107,12 @@ def profile(request):
                 return JsonResponse({
                     "status": False,
                     "message": "Username already exists!"
+                }, status=401)
+        if data['username'] == "":
+            if User.objects.filter(username=data['username']).exists():
+                return JsonResponse({
+                    "status": False,
+                    "message": "Username cannot be empty!"
                 }, status=401)
         if data['email'] != user.email:
             if User.objects.filter(email=data['email']).exists():
