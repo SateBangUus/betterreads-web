@@ -89,6 +89,7 @@ def decrementBookFlutter(request):
             book.save()
 
         return JsonResponse({"status": "success"}, status=200)
+@csrf_exempt
 def deleteBookFlutter(request):
     if request.method == 'POST':
         data = json.loads(request.body)
