@@ -14,7 +14,7 @@ urlpatterns = [
     path('json/<int:book_id>/', views.get_book_json, name='get_book_json'),
     path('json/all/', views.get_all_books_json, name='get_all_books_json'),
     path('json/user/<int:user_id>/', views.get_user_books_json, name='get_user_books_json'),
-    path('reviews/json/<int:book_id>/', views.get_book_reviews, name='get_book_reviews'),
+    path('reviews/json/<int:book_id>/', views.get_book_reviews, name='book_reviews'),
 
 
 
