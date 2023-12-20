@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from .models import Book, Review
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt  # Import csrf_exempt
+from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.db.models import F
@@ -10,6 +11,7 @@ from buy.models import Cart
 from django.http import JsonResponse
 from .models import Book
 from .models import Review
+from django.contrib.auth.models import User
 import json
 
 # View to display a list of all books
@@ -137,6 +139,54 @@ def get_user_books_json(request, user_id):
     except User.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'User not found'}, status=404)
 
+@csrf_exempt    
+@require_http_methods(["GET", "POST"])
 def get_book_reviews(request, book_id):
-    reviews = Review.objects.filter(book_id=book_id).select_related('user')
-    return JsonResponse(serializers.serialize("json", reviews), safe=False)
+    if request.method == 'GET':
+        reviews = Review.objects.filter(book_id=book_id).select_related('user')
+
+        review_list = []
+        for review in reviews:
+            review_dict = {
+                'reviewId': review.id,
+                'user': review.user.username,  # Assuming 'user' is a ForeignKey to User model
+                'description': review.description,
+                'rating': review.rating,
+                'isCurator': review.is_curator  # Adjust field name as per your model
+            }
+            review_list.append(review_dict)
+
+        return JsonResponse(review_list, safe=False)
+
+    elif request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            user_id = data.get('user_id')
+            description = data.get('description')
+            rating = data.get('rating')
+            is_curator = data.get('is_curator', False)  # Default to False if not provided
+
+            # You might want to add additional validations hereYYYYY
+            user = User.objects.get(username=data['user'])
+            book = Book.objects.get(pk=book_id)
+
+            new_review = Review(
+                user=user,
+                book=book,
+                description=description,
+                rating=rating,
+                is_curator=is_curator
+            )
+            new_review.save()
+
+            return JsonResponse({'status': 'success', 'message': 'Review added successfully'}, status=201)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+        except ObjectDoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'User or Book not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
