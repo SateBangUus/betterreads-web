@@ -73,7 +73,7 @@ def incrementBookFlutter(request):
         data = json.loads(request.body)
 
         book = Cart.objects.get(pk=data['id'])
-        book.book_amount += 1
+        book.amount += 1
         book.save()
 
         return JsonResponse({"status": "success"}, status=200)
@@ -84,8 +84,8 @@ def decrementBookFlutter(request):
         data = json.loads(request.body)
 
         book = Cart.objects.get(pk=data['id'])
-        if (book.book_amount > 1):
-            book.book_amount -= 1
+        if (book.amount > 1):
+            book.amount -= 1
             book.save()
 
         return JsonResponse({"status": "success"}, status=200)
