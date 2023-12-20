@@ -5,7 +5,11 @@ from django.views.decorators.csrf import csrf_exempt  # Import csrf_exempt
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.db.models import F
+from django.core import serializers
 from buy.models import Cart
+from django.http import JsonResponse
+from .models import Book
+from .models import Review
 import json
 
 # View to display a list of all books
@@ -112,3 +116,49 @@ def add_to_cart(request, book_id):
         return JsonResponse({'status': 'success', 'message': 'Book added to cart successfully'})
     else:
         return JsonResponse({'status': 'error', 'message': 'This method is not allowed'}, status=405)
+
+def get_book_json(request, book_id):
+    try:
+        book = Book.objects.get(pk=book_id)
+        return JsonResponse(serializers.serialize("json", [book,]), safe=False)
+    except Book.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Book not found'}, status=404)
+
+def get_all_books_json(request):
+    books = Book.objects.all()
+    books_data = [
+        {
+            "title": book.title,
+            "author": book.author,
+            "publisher": book.publisher,
+            "published_date": book.published_date,
+            "description": book.description,
+            "genre": book.genre,
+            "image_link": book.image_link,
+        }
+        for book in books
+    ]
+    return JsonResponse(books_data, safe=False)
+
+def get_user_books_json(request, user_id):
+    try:
+        user = User.objects.get(pk=user_id)
+        books = Book.objects.filter(review__user=user)  # Assuming a user has books through reviews
+        books_data = list(books)
+        return JsonResponse(books_data, safe=False)
+    except User.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'User not found'}, status=404)
+
+def get_book_reviews(request, book_id):
+    reviews = Review.objects.filter(book_id=book_id).select_related('user')
+    reviews_data = [
+        {
+            "id": review.id,
+            "user": review.user.username,  # or any other user attribute
+            "description": review.description,
+            "rating": review.rating,
+            # Add other fields if necessary
+        }
+        for review in reviews
+    ]
+    return JsonResponse(reviews_data, safe=False)
