@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from .models import Book, Review
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt  # Import csrf_exempt
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.db.models import F
 from django.core import serializers
@@ -127,7 +127,7 @@ def get_book_json(request, book_id):
 
 def get_all_books_json(request):
     books = Book.objects.all()
-    return JsonResponse(serializers.serialize("json", books), safe=False)
+    return HttpResponse(serializers.serialize("json", books), content_type="application/json")
 
 def get_user_books_json(request, user_id):
     try:

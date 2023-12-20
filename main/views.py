@@ -34,16 +34,33 @@ def search_books_flutter(request):
     search_term = request.GET.get('search_term', '')
     filtered_books = Book.objects.filter(title__icontains=search_term)
     book_data = [{
-        "model": "main.books",
+        "model": "book.book",
         "pk": book.pk,
         "fields": {
             'title': book.title, 
             'author': book.author, 
             'publisher': book.publisher, 
+            'published_date': book.published_date,
             'description': book.description, 
             'genre': book.genre, 
             'image_link': book.image_link, 
-            'id': book.id
         }
     } for book in filtered_books]
+    return JsonResponse(book_data, safe=False)
+
+def show_books_flutter(request):
+    allbooks = Book.objects.all()
+    book_data = [{
+        "model": "book.book",
+        "pk": book.pk,
+        "fields": {
+            'title': book.title, 
+            'author': book.author, 
+            'publisher': book.publisher, 
+            'published_date': book.published_date,
+            'description': book.description, 
+            'genre': book.genre, 
+            'image_link': book.image_link, 
+        }
+    } for book in allbooks]
     return JsonResponse(book_data, safe=False)
